@@ -1,0 +1,10 @@
+{
+  // 排除资源管理器显示
+  "files.exclude": {
+    "**/generated": true
+  },
+  // 排除搜索
+  "search.exclude": {
+    "**/generated": true
+  },
+}

@@ -1,0 +1,43 @@
+{
+  "name": "gefe-api-generator",
+  "version": "0.1.0",
+  "type": "module",
+  "description": "Flexible API generator from OpenAPI/Swagger specs with incremental generation support",
+  "author": "Chaos",
+  "keywords": [
+    "openapi",
+    "swagger",
+    "api-generator",
+    "typescript",
+    "kubb"
+  ],
+  "bin": {
+    "gefe-api-gen": "./dist/bin/gefe-api-gen.js"
+  },
+  "files": [
+    "dist",
+    "templates"
+  ],
+  "scripts": {
+    "build": "tsc",
+    "dev": "tsx bin/gefe-api-gen.ts",
+    "prepublishOnly": "pnpm run build",
+    "prekubb": "node scripts/patch-swagger.js",
+    "generate:api": "npx kubb"
+  },
+  "dependencies": {
+    "@kubb/core": "^4.4.1",
+    "@kubb/plugin-client": "^4.4.1",
+    "@kubb/plugin-oas": "^4.4.1",
+    "@kubb/plugin-ts": "^4.4.1",
+    "cac": "^6.7.14",
+    "chalk": "^5.6.2",
+    "dotenv": "^17.2.3",
+    "swagger2openapi": "^7.0.8"
+  },
+  "devDependencies": {
+    "@types/node": "^20",
+    "tsx": "^4.20.6",
+    "typescript": "^5"
+  }
+}

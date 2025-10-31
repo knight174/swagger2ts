@@ -1,0 +1,28 @@
+# Build output
+dist
+
+# Dependencies
+node_modules
+
+# Cache directories
+.api-gen-cache
+.kubb
+.temp
+
+# Environment variables
+.env
+.env.local
+
+# IDE
+.vscode/*
+!.vscode/settings.json
+.idea
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
+npm-debug.log*
+pnpm-debug.log*
