@@ -12,8 +12,8 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
 
 // 读取 package.json 获取版本号
-// 开发模式：bin/gefe-api-gen.ts -> 向上一级
-// 编译后：dist/bin/gefe-api-gen.js -> 向上两级
+// 开发模式：bin/swagger2ts.ts -> 向上一级
+// 编译后：dist/bin/swagger2ts.js -> 向上两级
 // 尝试向上两级（编译后），如果失败则向上一级（开发模式）
 let packageJson: { version: string };
 try {
@@ -26,7 +26,7 @@ try {
   );
 }
 
-const cli = cac("gefe-api-gen");
+const cli = cac("swagger2ts");
 
 cli
   .command("[action]", "生成 API 客户端")

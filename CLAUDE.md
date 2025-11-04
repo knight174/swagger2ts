@@ -4,7 +4,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project Overview
 
-Gefe API Generator is a TypeScript-based CLI tool that generates type-safe API clients and TypeScript definitions from OpenAPI/Swagger specifications using Kubb. It's designed as an npx-executable package with support for incremental generation, Swagger 2.0 conversion, custom patches, and multiple configuration methods.
+Swagger2TS is a TypeScript-based CLI tool that generates type-safe API clients and TypeScript definitions from OpenAPI/Swagger specifications using Kubb. It's designed as an npx-executable package with support for incremental generation, Swagger 2.0 conversion, custom patches, and multiple configuration methods.
 
 ## Key Commands
 
@@ -29,15 +29,15 @@ Uses the legacy Kubb config (`kubb.config.ts`) to generate API clients. Runs `pr
 ### CLI Usage (Primary Method)
 ```bash
 # Using npx
-npx gefe-api-gen -i ./swagger.json -o ./dist/api
+npx @miaoosi/swagger2ts -i ./swagger.json -o ./dist/api
 
 # Using pnpm dev for development (without --)
 pnpm dev -i ./swagger.json -o ./dist/api
 
 # Common options
-npx gefe-api-gen -i ./swagger.json -o ./dist --force  # Force regeneration
-npx gefe-api-gen --env .env.production       # Load specific .env file
-npx gefe-api-gen -i ./swagger.json -o ./dist --convert-to-v3  # Convert Swagger 2.0
+npx @miaoosi/swagger2ts -i ./swagger.json -o ./dist --force  # Force regeneration
+npx @miaoosi/swagger2ts --env .env.production       # Load specific .env file
+npx @miaoosi/swagger2ts -i ./swagger.json -o ./dist --convert-to-v3  # Convert Swagger 2.0
 ```
 
 ## Architecture
@@ -95,7 +95,7 @@ The tool supports multiple configuration methods:
 
 **1. CLI Parameters**
 ```bash
-npx gefe-api-gen -i ./swagger.json -o ./src/api
+npx @miaoosi/swagger2ts -i ./swagger.json -o ./src/api
 ```
 
 **2. Environment Variables** (`.env` file)
@@ -186,7 +186,7 @@ Use `--force` or `--no-cache` flags, or delete `{output}/.api-gen-cache/` direct
 - Source files compiled from root directory to `dist/`
 
 **Entry Point**:
-- Binary entry: `bin/gefe-api-gen.ts` → compiles to `dist/bin/gefe-api-gen.js`
+- Binary entry: `bin/swagger2ts.ts` → compiles to `dist/bin/swagger2ts.js`
 - Uses shebang `#!/usr/bin/env node` for CLI execution
 - CLI framework: `cac` for argument parsing
 
@@ -197,7 +197,7 @@ pnpm dev -i ./swagger.json -o ./dist/test
 
 # Build and test as it would be installed
 pnpm run build
-node dist/bin/gefe-api-gen.js -i ./swagger.json -o ./dist/test
+node dist/bin/swagger2ts.js -i ./swagger.json -o ./dist/test
 ```
 
 ## Examples Directory

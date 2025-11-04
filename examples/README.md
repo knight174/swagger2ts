@@ -1,29 +1,35 @@
-# Gefe API Generator - Examples
+# Swagger2TS - Examples
 
-This directory contains various examples demonstrating how to use Gefe API Generator in different scenarios.
+This directory contains various examples demonstrating how to use Swagger2TS in different scenarios.
 
 ## Examples Overview
 
 ### 1. Basic Usage (`01-basic-usage.ts`)
+
 Learn how to use the generated API client for basic API calls with full type safety.
 
 **Key concepts:**
+
 - Importing generated types and clients
 - Making type-safe API requests
 - Handling responses
 
 ### 2. Authentication (`02-with-authentication.ts`)
+
 Add authentication headers to your API requests.
 
 **Key concepts:**
+
 - Adding custom headers
 - Bearer token authentication
 - Error handling
 
 ### 3. Multiple API Sources (`03-multiple-api-sources.ts`)
+
 Manage and use multiple API sources in the same project.
 
 **Key concepts:**
+
 - Generating clients for multiple APIs
 - Importing from different API sources
 - Using multiple clients together
@@ -31,34 +37,31 @@ Manage and use multiple API sources in the same project.
 **Shell script:** `03-multiple-api-sources.sh` - Generate multiple API clients
 
 ### 4. Custom Patches (`04-custom-patches.ts`)
+
 Create custom patch functions to fix non-standard Swagger formats.
 
 **Key concepts:**
+
 - Creating patch functions
 - Fixing type definitions
 - Transforming Swagger specs before generation
 
-### 5. Configuration File (`05-config-file.ts`)
-Use a configuration file for advanced scenarios with multiple sources.
+### 5. Environment Variables (`06-env-variables.sh`)
 
-**Key concepts:**
-- `gefe.config.ts` structure
-- Multiple API source configuration
-- Global and per-source patches
-- Cache settings
-
-### 6. Environment Variables (`06-env-variables.sh`)
 Configure the generator using environment variables.
 
 **Key concepts:**
+
 - `.env` file usage
 - Custom environment files
 - Environment-based configuration
 
-### 7. Axios Client (`07-axios-client.ts`)
+### 6. Axios Client (`07-axios-client.ts`)
+
 Use Axios instead of Fetch for HTTP requests.
 
 **Key concepts:**
+
 - Generating Axios-based clients
 - Request/response interceptors
 - Advanced Axios features
@@ -67,23 +70,27 @@ Use Axios instead of Fetch for HTTP requests.
 ## Quick Start
 
 ### Generate from a local file
+
 ```bash
-npx gefe-api-gen -i ./swagger.json -o ./src/api
+npx @miaoosi/swagger2ts -i ./swagger.json -o ./src/api
 ```
 
 ### Generate from a URL
+
 ```bash
-npx gefe-api-gen -i https://api.example.com/swagger.json -o ./src/api
+npx @miaoosi/swagger2ts -i https://api.example.com/swagger.json -o ./src/api
 ```
 
 ### Convert Swagger 2.0 to OpenAPI 3.x
+
 ```bash
-npx gefe-api-gen -i ./swagger-v2.json -o ./src/api --convert-to-v3
+npx @miaoosi/swagger2ts -i ./swagger-v2.json -o ./src/api --convert-to-v3
 ```
 
 ### Force regeneration (skip cache)
+
 ```bash
-npx gefe-api-gen -i ./swagger.json -o ./src/api --force
+npx @miaoosi/swagger2ts -i ./swagger.json -o ./src/api --force
 ```
 
 ## Additional Resources
@@ -95,6 +102,7 @@ npx gefe-api-gen -i ./swagger.json -o ./src/api --force
 ## Need Help?
 
 If you encounter issues or have questions:
+
 1. Check the [Troubleshooting](../README.md#troubleshooting) section in the main README
 2. Review the examples in this directory
 3. Check the [CLAUDE.md](../CLAUDE.md) for development guidance

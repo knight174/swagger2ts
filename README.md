@@ -1,6 +1,6 @@
-# Gefe API Generator
+# Swagger2TS
 
-A flexible, type-safe API client generator from OpenAPI/Swagger specifications with incremental generation support.
+Generate type-safe TypeScript API clients from OpenAPI/Swagger specifications with incremental generation support.
 
 ## Features
 
@@ -17,16 +17,16 @@ A flexible, type-safe API client generator from OpenAPI/Swagger specifications w
 
 ```bash
 # Basic command structure
-npx gefe-api-gen -i <path-to-swagger-or-url> -o <output-directory>
+npx @miaoosi/swagger2ts -i <path-to-swagger-or-url> -o <output-directory>
 
 # Generate API client from a Swagger file
-npx gefe-api-gen -i ./swagger.json -o ./src/api
+npx @miaoosi/swagger2ts -i ./swagger.json -o ./src/api
 
 # Generate from a URL
-npx gefe-api-gen -i https://api.example.com/swagger.json -o ./src/api
+npx @miaoosi/swagger2ts -i https://api.example.com/swagger.json -o ./src/api
 
 # Convert Swagger 2.0 to OpenAPI 3.x
-npx gefe-api-gen -i ./swagger-v2.json -o ./src/api --convert-to-v3
+npx @miaoosi/swagger2ts -i ./swagger-v2.json -o ./src/api --convert-to-v3
 ```
 
 ### Installation
@@ -35,19 +35,19 @@ npx gefe-api-gen -i ./swagger-v2.json -o ./src/api --convert-to-v3
 
 ```bash
 # Using pnpm
-pnpm add -D gefe-api-generator
+pnpm add -D @miaoosi/swagger2ts
 
 # Using npm
-npm install --save-dev gefe-api-generator
+npm install --save-dev @miaoosi/swagger2ts
 
 # Using yarn
-yarn add -D gefe-api-generator
+yarn add -D @miaoosi/swagger2ts
 ```
 
 Then run:
 
 ```bash
-npx gefe-api-gen -i <path-to-swagger-or-url> -o <output-directory>
+npx swagger2ts -i <path-to-swagger-or-url> -o <output-directory>
 ```
 
 ## CLI Options
@@ -64,15 +64,15 @@ npx gefe-api-gen -i <path-to-swagger-or-url> -o <output-directory>
 
 ## Configuration Methods
 
-Gefe API Generator supports two configuration methods, with the following priority order:
+Swagger2TS supports two configuration methods, with the following priority order:
 
 ### 1. CLI Arguments (Higher Priority)
 
 Pass input/output directly via command line:
 
 ```bash
-npx gefe-api-gen -i ./swagger.json -o ./src/api
-npx gefe-api-gen -i https://api.com/swagger.json -o ./src/api --clean
+npx swagger2ts -i ./swagger.json -o ./src/api
+npx swagger2ts -i https://api.com/swagger.json -o ./src/api --clean
 ```
 
 ### 2. Environment Variables
@@ -88,67 +88,16 @@ CONVERT_TO_V3=true
 Then run:
 
 ```bash
-npx gefe-api-gen
+npx swagger2ts
 ```
 
 You can also specify a custom `.env` file:
 
 ```bash
-npx gefe-api-gen --env .env.production
+npx swagger2ts --env .env.production
 ```
 
-## Advanced Configuration
-
-### Project Configuration File
-
-Create a `gefe.config.ts` file in your project root for advanced scenarios:
-
-```typescript
-import type { GefeConfig } from "gefe-api-generator";
-import { builtinPatches } from "gefe-api-generator/swagger-processor";
-
-const config: GefeConfig = {
-  // Define multiple API sources
-  sources: {
-    main: {
-      input: "./swagger/main.json",
-      output: "./src/api/main",
-      convertToV3: true,
-      clean: false,
-    },
-    admin: {
-      input: "https://admin.example.com/swagger.json",
-      output: "./src/api/admin",
-      convertToV3: true,
-      patches: [
-        builtinPatches.giteeTimestamp,
-        // Custom patch example
-        (content: string) => {
-          return content.replace(/"type": "CustomType"/g, '"type": "string"');
-        },
-      ],
-    },
-  },
-
-  // Global patches applied to all sources
-  patches: [builtinPatches.giteeTimestamp],
-
-  // Enable incremental cache
-  cache: true,
-
-  // Custom cache directory (optional)
-  cacheDir: ".api-gen-cache",
-
-  // Convert all sources to OpenAPI 3.x
-  convertToV3: true,
-};
-
-export default config;
-```
-
-See `gefe.config.example.ts` for more examples.
-
-### Custom Swagger Patches
+## Custom Swagger Patches
 
 Patches are functions that transform Swagger JSON content before generation. Useful for fixing non-standard formats.
 
@@ -193,7 +142,6 @@ For detailed examples and code samples, see the **[examples/](./examples/)** dir
 - **[Authentication](./examples/02-with-authentication.ts)** - Adding auth headers
 - **[Multiple API Sources](./examples/03-multiple-api-sources.ts)** - Managing multiple APIs
 - **[Custom Patches](./examples/04-custom-patches.ts)** - Fixing non-standard Swagger formats
-- **[Configuration File](./examples/05-config-file.ts)** - Advanced configuration with `gefe.config.ts`
 - **[Environment Variables](./examples/06-env-variables.sh)** - Using `.env` files
 - **[Axios Client](./examples/07-axios-client.ts)** - Using Axios instead of Fetch
 
@@ -227,10 +175,10 @@ The tool uses MD5 hashing to detect changes in Swagger files:
 
 ```bash
 # Normal run - will skip if unchanged
-npx gefe-api-gen -i <path-to-swagger-or-url> -o <output-directory>
+npx swagger2ts -i <path-to-swagger-or-url> -o <output-directory>
 
 # Force regeneration
-npx gefe-api-gen -i <path-to-swagger-or-url> -o <output-directory> --force
+npx swagger2ts -i <path-to-swagger-or-url> -o <output-directory> --force
 ```
 
 ## Swagger 2.0 Support
@@ -238,7 +186,7 @@ npx gefe-api-gen -i <path-to-swagger-or-url> -o <output-directory> --force
 The tool can automatically convert Swagger 2.0 specifications to OpenAPI 3.x:
 
 ```bash
-npx gefe-api-gen -i <path-to-swagger-or-url> -o <output-directory> --convert-to-v3
+npx swagger2ts -i <path-to-swagger-or-url> -o <output-directory> --convert-to-v3
 ```
 
 This uses the [swagger2openapi](https://github.com/Mermade/oas-kit) library with automatic patching for common issues.
@@ -248,9 +196,8 @@ This uses the [swagger2openapi](https://github.com/Mermade/oas-kit) library with
 ### Project Setup
 
 ```bash
-# Clone repository
 git clone <repo-url>
-cd gefe-api-generator
+cd swagger2ts
 
 # Install dependencies
 pnpm install
@@ -272,56 +219,38 @@ pnpm run dev -- -i ./__mock__/swagger.json -o ./api/test
 ### Project Structure
 
 ```bash
-gefe-api-generator/
+swagger2ts/
 ├── bin/
-│   └── gefe-api-gen.ts        # CLI entry point
+│   └── swagger2ts.ts              # CLI entry point
 ├── src/
-│   ├── cli.ts                 # CLI argument parsing
-│   ├── generator.ts           # Kubb wrapper
-│   ├── incremental.ts         # Cache system
-│   ├── swagger-processor.ts   # Swagger patching & conversion
-│   └── types.ts               # TypeScript definitions
+│   ├── cli.ts                     # CLI argument parsing
+│   ├── generator.ts               # Kubb wrapper
+│   ├── incremental.ts             # Cache system
+│   ├── swagger-processor.ts       # Swagger patching & conversion
+│   └── types.ts                   # TypeScript definitions
 ├── templates/
-│   ├── base.config.ts         # Reusable Kubb config (Fetch)
-│   └── axios-client.config.ts # Axios client configuration
+│   ├── base.config.ts             # Reusable Kubb config (Fetch)
+│   └── axios-client.config.ts     # Axios client configuration
 ├── examples/
-│   ├── 01-basic-usage.ts      # Basic usage example
+│   ├── 01-basic-usage.ts          # Basic usage example
 │   ├── 02-with-authentication.ts
 │   ├── 03-multiple-api-sources.ts
 │   ├── 04-custom-patches.ts
 │   ├── 05-config-file.ts
 │   ├── 06-env-variables.sh
 │   ├── 07-axios-client.ts
-│   └── README.md              # Examples documentation
-├── config/
-│   └── index.ts               # Legacy config (deprecated)
-└── swaggers/
-    └── demo.json              # Demo Swagger file
+│   └── README.md                  # Examples documentation
+└── __mock__/
+    └── swagger.json               # Demo Swagger file
 ```
 
 ## Troubleshooting
 
 ### "Timestamp" Type Errors
 
-If you encounter errors with non-standard "Timestamp" types (common with Gitee API), you can use custom patches:
+If you encounter errors with non-standard "Timestamp" types (common with Gitee API), you can create custom patches. See [examples/04-custom-patches.ts](./examples/04-custom-patches.ts) for how to implement patch functions.
 
-```typescript
-// gefe.config.ts
-import { builtinPatches } from "gefe-api-generator/swagger-processor";
-
-const config = {
-  sources: {
-    gitee: {
-      input: "https://gitee.com/api/v5/doc_json",
-      output: "./src/api/gitee",
-      convertToV3: true,
-      patches: [builtinPatches.giteeTimestamp],
-    },
-  },
-};
-
-export default config;
-```
+> **Note:** Built-in patch support via configuration file is planned for a future release.
 
 ### Cache Issues
 
@@ -329,7 +258,7 @@ If you suspect cache corruption:
 
 ```bash
 # Force regeneration
-npx gefe-api-gen -i ./swagger.json -o ./src/api --force
+npx swagger2ts -i ./swagger.json -o ./src/api --force
 
 # Or delete cache directory
 rm -rf ./src/api/.api-gen-cache
@@ -341,7 +270,7 @@ For Swagger 2.0 validation errors:
 
 ```bash
 # Convert to OpenAPI 3.x first
-npx gefe-api-gen -i ./swagger.json -o ./src/api --convert-to-v3
+npx swagger2ts -i ./swagger.json -o ./src/api --convert-to-v3
 ```
 
 ## Migration Guide
@@ -357,12 +286,12 @@ pnpm run generate:api
 **After:**
 
 ```bash
-npx gefe-api-gen -i ./swagger.json -o ./dist/api
+npx swagger2ts -i ./swagger.json -o ./dist/api
 ```
 
 ### From Direct Kubb Usage
 
-Replace your Kubb configuration with Gefe's CLI:
+Replace your Kubb configuration with Swagger2TS CLI:
 
 **Before:**
 
@@ -378,7 +307,7 @@ export default {
 **After:**
 
 ```bash
-npx gefe-api-gen -i ./swagger.json -o ./src/api
+npx swagger2ts -i ./swagger.json -o ./src/api
 ```
 
 All plugin configurations are handled by `templates/base.config.ts`.

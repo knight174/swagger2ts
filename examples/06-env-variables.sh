@@ -13,7 +13,7 @@ CONVERT_TO_V3=true
 EOF
 
 # Run the generator (it will read from .env)
-npx gefe-api-gen
+npx @miaoosi/swagger2ts
 
 # Method 2: Use a custom .env file
 cat > .env.production << 'EOF'
@@ -22,6 +22,6 @@ OUTPUT_PATH=./src/api/production
 CONVERT_TO_V3=true
 EOF
 
-npx gefe-api-gen --env .env.production
+npx @miaoosi/swagger2ts --env .env.production
 
 echo "✅ API clients generated using environment variables!"

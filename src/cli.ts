@@ -13,12 +13,12 @@ import { generateAPI } from "./generator.js";
  * 主 CLI 逻辑
  */
 export async function run(options: CliOptions): Promise<void> {
-  console.log(chalk.cyan.bold("\n🚀 Gefe API Generator\n"));
+  console.log(chalk.cyan.bold("\n🚀 Swagger2TS\n"));
 
   // 加载环境变量
   if (options.env) {
     loadEnv({ path: options.env });
-    console.log(chalk.gray(`📦 加载环境变量: ${options.env}\n`));
+    console.log(chalk.gray(`📦 加载环境变量：${options.env}\n`));
   } else {
     loadEnv();
   }
@@ -50,9 +50,8 @@ export async function run(options: CliOptions): Promise<void> {
     console.log(
       chalk.gray(
         "\n使用方式:\n" +
-          "  1. 指定输入输出: -i <input> -o <output>\n" +
-          "  2. 使用环境变量: SWAGGER_INPUT 和 OUTPUT_PATH\n" +
-          "  3. 使用配置文件: 创建 gefe.config.ts 文件\n"
+          "  1. 指定输入输出：-i <input> -o <output>\n" +
+          "  2. 使用环境变量：SWAGGER_INPUT 和 OUTPUT_PATH\n"
       )
     );
     process.exit(1);
@@ -62,8 +61,8 @@ export async function run(options: CliOptions): Promise<void> {
   input = input.startsWith("http") ? input : path.resolve(input);
   output = path.resolve(output);
 
-  console.log(chalk.gray(`📥 输入: ${input}`));
-  console.log(chalk.gray(`📤 输出: ${output}\n`));
+  console.log(chalk.gray(`📥 输入：${input}`));
+  console.log(chalk.gray(`📤 输出：${output}\n`));
 
   try {
     // 处理 Swagger（获取、补丁、转换）
@@ -89,7 +88,7 @@ export async function run(options: CliOptions): Promise<void> {
 
     // 保存到临时文件
     const tempFile = saveTempSwagger(processed.content, output);
-    console.log(chalk.gray(`💾 临时文件: ${tempFile}\n`));
+    console.log(chalk.gray(`💾 临时文件：${tempFile}\n`));
 
     // 生成 API 客户端
     await generateAPI({
@@ -104,7 +103,7 @@ export async function run(options: CliOptions): Promise<void> {
     console.log(chalk.green.bold("\n✅ 完成！\n"));
   } catch (error) {
     console.error(
-      chalk.red("\n❌ 生成失败:"),
+      chalk.red("\n❌ 生成失败："),
       error instanceof Error ? error.message : error
     );
     process.exit(1);

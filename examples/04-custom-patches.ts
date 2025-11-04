@@ -5,7 +5,7 @@
  * to fix non-standard Swagger formats.
  */
 
-import type { PatchFunction } from "gefe-api-generator";
+import type { PatchFunction } from "@miaoosi/swagger2ts";
 
 // Fix custom timestamp format
 const fixTimestamp: PatchFunction = (content: string) => {
