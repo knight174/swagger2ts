@@ -31,14 +31,13 @@ Uses the legacy Kubb config (`kubb.config.ts`) to generate API clients. Runs `pr
 # Using npx
 npx gefe-api-gen -i ./swagger.json -o ./dist/api
 
-# Using pnpm dev for development
-pnpm dev -- -i ./swagger.json -o ./dist/api
+# Using pnpm dev for development (without --)
+pnpm dev -i ./swagger.json -o ./dist/api
 
 # Common options
-npx gefe-api-gen --source demo              # Use predefined source
-npx gefe-api-gen --source gitee --convert-to-v3  # Convert Swagger 2.0
 npx gefe-api-gen -i ./swagger.json -o ./dist --force  # Force regeneration
 npx gefe-api-gen --env .env.production       # Load specific .env file
+npx gefe-api-gen -i ./swagger.json -o ./dist --convert-to-v3  # Convert Swagger 2.0
 ```
 
 ## Architecture
@@ -49,10 +48,9 @@ The project follows a modular architecture with clear separation between CLI, Sw
 
 **`src/cli.ts`** - Main CLI Logic
 - Parses command-line options using `cac`
-- Supports three configuration sources (priority order):
-  1. Predefined sources (`--source demo|gitee`)
-  2. CLI parameters (`-i`, `-o`)
-  3. Environment variables (`SWAGGER_INPUT`, `OUTPUT_PATH`)
+- Supports two configuration sources (priority order):
+  1. CLI parameters (`-i`, `-o`)
+  2. Environment variables (`SWAGGER_INPUT`, `OUTPUT_PATH`)
 - Coordinates the entire generation workflow
 
 **`src/swagger-processor.ts`** - Swagger Processing Pipeline
@@ -78,31 +76,26 @@ The project follows a modular architecture with clear separation between CLI, Sw
 - `PatchFunction` type for custom Swagger patches
 
 **`templates/base.config.ts`** - Reusable Kubb Configuration
-- Exports `getCommonConfig()` - returns standard Kubb plugin configuration
+- Exports `getCommonConfig()` - returns standard Kubb plugin configuration for Fetch clients
 - Exports `createApiConfig()` - factory function for creating custom configs
 - Plugin chain:
   1. `pluginOas()` - Parses OpenAPI/Swagger specs
   2. `pluginTs()` - Generates TypeScript types grouped by tag
   3. `pluginClient()` - Generates fetch-based API clients
 
+**`templates/axios-client.config.ts`** - Axios Client Configuration
+- Exports `getAxiosConfig()` - returns Kubb plugin configuration for Axios clients
+- Exports `createAxiosConfig()` - factory function for Axios-based configs
+- Use when you need Axios features like interceptors, request cancellation, etc.
+- Requires `axios` to be installed in the consuming project
+
 ### Configuration System
 
 The tool supports multiple configuration methods:
 
-**1. Predefined Sources** (`src/cli.ts`)
-```typescript
-const PREDEFINED_SOURCES = {
-  demo: {
-    input: "./swaggers/demo.json",
-    output: "./dist/demo",
-  },
-  gitee: {
-    input: "https://gitee.com/api/v5/doc_json",
-    output: "./dist/giteeV8",
-    convertToV3: true,
-    patches: [builtinPatches.giteeTimestamp],
-  },
-};
+**1. CLI Parameters**
+```bash
+npx gefe-api-gen -i ./swagger.json -o ./src/api
 ```
 
 **2. Environment Variables** (`.env` file)
@@ -162,7 +155,7 @@ From `templates/base.config.ts`:
 
 The typical generation workflow:
 
-1. **CLI parses options** - Determines input/output from CLI args, predefined sources, or env vars
+1. **CLI parses options** - Determines input/output from CLI args or env vars
 2. **Fetch Swagger** - Downloads from URL or reads from file (`fetchSwagger`)
 3. **Apply patches** - Runs custom patch functions to fix non-standard types (`applyPatches`)
 4. **Detect version** - Identifies Swagger 2.0 vs OpenAPI 3.x (`detectSwaggerVersion`)
@@ -174,17 +167,6 @@ The typical generation workflow:
 
 ### Development Patterns
 
-**Adding a New Predefined Source**:
-Edit `PREDEFINED_SOURCES` in `src/cli.ts`:
-```typescript
-myapi: {
-  input: "https://api.example.com/swagger.json",
-  output: "./dist/myapi",
-  convertToV3: true,
-  patches: [builtinPatches.giteeTimestamp, customPatch],
-}
-```
-
 **Creating a Custom Patch**:
 ```typescript
 const customPatch: PatchFunction = (content: string) => {
@@ -194,3 +176,61 @@ const customPatch: PatchFunction = (content: string) => {
 
 **Bypassing Cache**:
 Use `--force` or `--no-cache` flags, or delete `{output}/.api-gen-cache/` directory.
+
+## Important Notes
+
+**TypeScript Configuration**:
+- Project uses ESM (`"type": "module"` in package.json)
+- Target: ES2022, moduleResolution: bundler
+- All imports must include `.js` extension (e.g., `import { run } from "../src/cli.js"`)
+- Source files compiled from root directory to `dist/`
+
+**Entry Point**:
+- Binary entry: `bin/gefe-api-gen.ts` → compiles to `dist/bin/gefe-api-gen.js`
+- Uses shebang `#!/usr/bin/env node` for CLI execution
+- CLI framework: `cac` for argument parsing
+
+**Testing During Development**:
+```bash
+# Test CLI without building (Note: do NOT use -- with pnpm dev)
+pnpm dev -i ./swagger.json -o ./dist/test
+
+# Build and test as it would be installed
+pnpm run build
+node dist/bin/gefe-api-gen.js -i ./swagger.json -o ./dist/test
+```
+
+## Examples Directory
+
+The `examples/` directory contains practical code samples demonstrating various use cases:
+
+- **`01-basic-usage.ts`** - Simple API calls with type safety
+- **`02-with-authentication.ts`** - Adding authentication headers
+- **`03-multiple-api-sources.ts`** - Managing multiple API sources
+- **`04-custom-patches.ts`** - Creating custom patch functions
+- **`05-config-file.ts`** - Using `gefe.config.ts` for advanced configuration
+- **`06-env-variables.sh`** - Environment variable configuration
+- **`07-axios-client.ts`** - Using Axios instead of Fetch
+- **`README.md`** - Complete examples documentation
+
+When adding new features, consider adding a corresponding example to help users understand the functionality.
+
+## Client Types
+
+The generator supports two client types:
+
+**Fetch Client (Default)**:
+- Uses native `fetch` API
+- No additional dependencies
+- Configuration: `templates/base.config.ts`
+- Output: `{output}/clients/fetch/`
+
+**Axios Client**:
+- Uses Axios library for HTTP requests
+- Requires `axios` dependency in consuming project
+- Configuration: `templates/axios-client.config.ts`
+- Output: `{output}/clients/axios/`
+- Benefits: Request/response interceptors, automatic JSON transformation, request cancellation, better error handling
+
+To use Axios client, users would need to create a custom generator script importing from `templates/axios-client.config.ts`.
+

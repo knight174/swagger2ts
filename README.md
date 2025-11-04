@@ -9,27 +9,29 @@ A flexible, type-safe API client generator from OpenAPI/Swagger specifications w
 - **Swagger 2.0 Support**: Automatic conversion to OpenAPI 3.x when needed
 - **Flexible Configuration**: CLI arguments, environment variables, or config files
 - **Custom Patches**: Built-in and extensible patch system for non-standard Swagger formats
-- **Multiple API Sources**: Support for managing multiple API sources in one project
+- **Multiple API Sources**: Support for managing multiple API sources via config file
 
 ## Quick Start
 
 ### Using npx (No Installation Required)
 
 ```bash
+# Basic command structure
+npx gefe-api-gen -i <path-to-swagger-or-url> -o <output-directory>
+
 # Generate API client from a Swagger file
 npx gefe-api-gen -i ./swagger.json -o ./src/api
 
 # Generate from a URL
 npx gefe-api-gen -i https://api.example.com/swagger.json -o ./src/api
 
-# Use a predefined source
-npx gefe-api-gen --source demo
-
 # Convert Swagger 2.0 to OpenAPI 3.x
 npx gefe-api-gen -i ./swagger-v2.json -o ./src/api --convert-to-v3
 ```
 
 ### Installation
+
+> Node version >= 20 is required. If your project is using an older version, consider using `npx` instead. Or install it in another directory with node >= 20.
 
 ```bash
 # Using pnpm
@@ -45,7 +47,7 @@ yarn add -D gefe-api-generator
 Then run:
 
 ```bash
-npx gefe-api-gen -i ./swagger.json -o ./src/api
+npx gefe-api-gen -i <path-to-swagger-or-url> -o <output-directory>
 ```
 
 ## CLI Options
@@ -54,7 +56,6 @@ npx gefe-api-gen -i ./swagger.json -o ./src/api
 |--------|-------|-------------|
 | `--input <path>` | `-i` | Swagger file path or URL |
 | `--output <path>` | `-o` | Output directory |
-| `--source <name>` | | Use predefined API source (e.g., `demo`, `gitee`) |
 | `--convert-to-v3` | | Convert Swagger 2.0 to OpenAPI 3.x |
 | `--force` | | Force regeneration (skip cache check) |
 | `--no-cache` | | Same as `--force` |
@@ -63,22 +64,9 @@ npx gefe-api-gen -i ./swagger.json -o ./src/api
 
 ## Configuration Methods
 
-Gefe API Generator supports three configuration methods, with the following priority order:
+Gefe API Generator supports two configuration methods, with the following priority order:
 
-### 1. Predefined Sources (Highest Priority)
-
-Use `--source` flag to use built-in API configurations:
-
-```bash
-npx gefe-api-gen --source demo
-npx gefe-api-gen --source gitee --convert-to-v3
-```
-
-**Available predefined sources:**
-- `demo`: Local demo API (`./swaggers/demo.json` → `./dist/demo`)
-- `gitee`: Gitee API v5 with automatic Timestamp patch
-
-### 2. CLI Arguments
+### 1. CLI Arguments (Higher Priority)
 
 Pass input/output directly via command line:
 
@@ -87,7 +75,7 @@ npx gefe-api-gen -i ./swagger.json -o ./src/api
 npx gefe-api-gen -i https://api.com/swagger.json -o ./src/api --clean
 ```
 
-### 3. Environment Variables (Lowest Priority)
+### 2. Environment Variables
 
 Create a `.env` file in your project root:
 
@@ -162,40 +150,19 @@ See `gefe.config.example.ts` for more examples.
 
 ### Custom Swagger Patches
 
-Patches are functions that transform Swagger JSON content before generation. Useful for fixing non-standard formats:
-
-```typescript
-import type { PatchFunction } from "gefe-api-generator";
-
-// Fix custom timestamp format
-const fixTimestamp: PatchFunction = (content: string) => {
-  return content.replace(
-    /"type":\s*"Timestamp"/gi,
-    '"type": "string", "format": "date-time"'
-  );
-};
-
-// Fix missing required fields
-const addRequiredFields: PatchFunction = (content: string) => {
-  const spec = JSON.parse(content);
-
-  // Modify spec object
-  if (spec.paths) {
-    // Your custom logic here
-  }
-
-  return JSON.stringify(spec, null, 2);
-};
-```
+Patches are functions that transform Swagger JSON content before generation. Useful for fixing non-standard formats.
 
 **Built-in patches:**
+
 - `builtinPatches.giteeTimestamp`: Fixes Gitee's non-standard "Timestamp" type
+
+For examples of creating custom patches, see [examples/04-custom-patches.ts](./examples/04-custom-patches.ts).
 
 ## Generated Code Structure
 
 Running the generator creates the following structure:
 
-```
+```bash
 {output}/
 ├── .api-gen-cache/
 │   └── metadata.json              # Cache metadata for incremental generation
@@ -218,57 +185,37 @@ Running the generator creates the following structure:
 
 ## Usage Examples
 
-### Basic Usage
+For detailed examples and code samples, see the **[examples/](./examples/)** directory.
+
+**Quick examples:**
+
+- **[Basic Usage](./examples/01-basic-usage.ts)** - Simple API calls with type safety
+- **[Authentication](./examples/02-with-authentication.ts)** - Adding auth headers
+- **[Multiple API Sources](./examples/03-multiple-api-sources.ts)** - Managing multiple APIs
+- **[Custom Patches](./examples/04-custom-patches.ts)** - Fixing non-standard Swagger formats
+- **[Configuration File](./examples/05-config-file.ts)** - Advanced configuration with `gefe.config.ts`
+- **[Environment Variables](./examples/06-env-variables.sh)** - Using `.env` files
+- **[Axios Client](./examples/07-axios-client.ts)** - Using Axios instead of Fetch
+
+### Quick Start Example
 
 ```typescript
-// Import generated types
+// Import generated types and client
 import type { GetUsersId } from "./api/types";
-
-// Import generated client
 import { getUsersIdClient } from "./api/clients/fetch";
 
-// Use the client
+// Make a type-safe API call
 const response = await getUsersIdClient({
   params: { id: "123" }
 });
 
-// Response is fully typed
 if (response.ok) {
   const user: GetUsersId["response"] = await response.json();
   console.log(user);
 }
 ```
 
-### With Custom Fetch Configuration
-
-```typescript
-import { getUsersIdClient } from "./api/clients/fetch";
-
-// Add authentication
-const response = await getUsersIdClient({
-  params: { id: "123" },
-  headers: {
-    Authorization: `Bearer ${token}`,
-  },
-});
-```
-
-### Multiple API Sources
-
-```bash
-# Generate main API
-npx gefe-api-gen -i ./swagger/main.json -o ./src/api/main
-
-# Generate admin API
-npx gefe-api-gen -i ./swagger/admin.json -o ./src/api/admin
-```
-
-Then import from different sources:
-
-```typescript
-import { getUserClient } from "./api/main/clients/fetch";
-import { getAdminStatsClient } from "./api/admin/clients/fetch";
-```
+See the [examples/README.md](./examples/README.md) for complete documentation of all examples.
 
 ## Incremental Generation
 
@@ -280,10 +227,10 @@ The tool uses MD5 hashing to detect changes in Swagger files:
 
 ```bash
 # Normal run - will skip if unchanged
-npx gefe-api-gen -i ./swagger.json -o ./src/api
+npx gefe-api-gen -i <path-to-swagger-or-url> -o <output-directory>
 
 # Force regeneration
-npx gefe-api-gen -i ./swagger.json -o ./src/api --force
+npx gefe-api-gen -i <path-to-swagger-or-url> -o <output-directory> --force
 ```
 
 ## Swagger 2.0 Support
@@ -291,7 +238,7 @@ npx gefe-api-gen -i ./swagger.json -o ./src/api --force
 The tool can automatically convert Swagger 2.0 specifications to OpenAPI 3.x:
 
 ```bash
-npx gefe-api-gen -i ./swagger-v2.json -o ./src/api --convert-to-v3
+npx gefe-api-gen -i <path-to-swagger-or-url> -o <output-directory> --convert-to-v3
 ```
 
 This uses the [swagger2openapi](https://github.com/Mermade/oas-kit) library with automatic patching for common issues.
@@ -312,7 +259,7 @@ pnpm install
 pnpm run build
 
 # Run in development mode
-pnpm run dev -- -i ./swagger.json -o ./dist/test
+pnpm run dev -- -i ./__mock__/swagger.json -o ./api/test
 ```
 
 ### Scripts
@@ -324,7 +271,7 @@ pnpm run dev -- -i ./swagger.json -o ./dist/test
 
 ### Project Structure
 
-```
+```bash
 gefe-api-generator/
 ├── bin/
 │   └── gefe-api-gen.ts        # CLI entry point
@@ -335,7 +282,17 @@ gefe-api-generator/
 │   ├── swagger-processor.ts   # Swagger patching & conversion
 │   └── types.ts               # TypeScript definitions
 ├── templates/
-│   └── base.config.ts         # Reusable Kubb config
+│   ├── base.config.ts         # Reusable Kubb config (Fetch)
+│   └── axios-client.config.ts # Axios client configuration
+├── examples/
+│   ├── 01-basic-usage.ts      # Basic usage example
+│   ├── 02-with-authentication.ts
+│   ├── 03-multiple-api-sources.ts
+│   ├── 04-custom-patches.ts
+│   ├── 05-config-file.ts
+│   ├── 06-env-variables.sh
+│   ├── 07-axios-client.ts
+│   └── README.md              # Examples documentation
 ├── config/
 │   └── index.ts               # Legacy config (deprecated)
 └── swaggers/
@@ -346,14 +303,24 @@ gefe-api-generator/
 
 ### "Timestamp" Type Errors
 
-If you encounter errors with non-standard "Timestamp" types (common with Gitee API):
+If you encounter errors with non-standard "Timestamp" types (common with Gitee API), you can use custom patches:
 
-```bash
-# Use built-in Gitee source
-npx gefe-api-gen --source gitee
+```typescript
+// gefe.config.ts
+import { builtinPatches } from "gefe-api-generator/swagger-processor";
 
-# Or apply patch manually
-npx gefe-api-gen -i <url> -o ./dist --convert-to-v3
+const config = {
+  sources: {
+    gitee: {
+      input: "https://gitee.com/api/v5/doc_json",
+      output: "./src/api/gitee",
+      convertToV3: true,
+      patches: [builtinPatches.giteeTimestamp],
+    },
+  },
+};
+
+export default config;
 ```
 
 ### Cache Issues
@@ -382,15 +349,15 @@ npx gefe-api-gen -i ./swagger.json -o ./src/api --convert-to-v3
 ### From Legacy `kubb.config.ts`
 
 **Before:**
+
 ```bash
 pnpm run generate:api
 ```
 
 **After:**
+
 ```bash
-npx gefe-api-gen --source demo
-# Or
-npx gefe-api-gen -i ./swaggers/demo.json -o ./dist/demo
+npx gefe-api-gen -i ./swagger.json -o ./dist/api
 ```
 
 ### From Direct Kubb Usage
@@ -398,6 +365,7 @@ npx gefe-api-gen -i ./swaggers/demo.json -o ./dist/demo
 Replace your Kubb configuration with Gefe's CLI:
 
 **Before:**
+
 ```typescript
 // kubb.config.ts
 export default {
@@ -408,6 +376,7 @@ export default {
 ```
 
 **After:**
+
 ```bash
 npx gefe-api-gen -i ./swagger.json -o ./src/api
 ```

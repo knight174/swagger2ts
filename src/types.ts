@@ -7,7 +7,6 @@ export interface CliOptions {
   input?: string;
   output?: string;
   config?: string;
-  source?: string;
   convertToV3?: boolean;
   noCache?: boolean;
   clean?: boolean;

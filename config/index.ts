@@ -1,9 +1,10 @@
 import { pluginOas } from "@kubb/plugin-oas";
 import { pluginTs } from "@kubb/plugin-ts";
 import { pluginClient } from "@kubb/plugin-client";
+import type { UserConfig } from "@kubb/core";
 
 // 公共的 Kubb 配置
-export const COMMON_CONFIG = {
+export const COMMON_CONFIG: Pick<UserConfig, "plugins"> = {
   plugins: [
     // 3️⃣ 加载 OAS 解析器
     pluginOas(),

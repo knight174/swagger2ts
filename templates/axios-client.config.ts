@@ -4,16 +4,26 @@ import { pluginClient } from "@kubb/plugin-client";
 import type { UserConfig } from "@kubb/core";
 
 /**
- * 通用的 Kubb 配置
- * 可被所有 API 源复用
+ * Axios Client Configuration
+ *
+ * This configuration generates API clients using Axios instead of Fetch.
+ * Use this when you prefer Axios for features like:
+ * - Request/response interceptors
+ * - Automatic JSON transformation
+ * - Request cancellation
+ * - Progress monitoring
+ * - Better error handling
+ *
+ * Note: You need to install axios in your project:
+ * pnpm add axios
  */
-export function getCommonConfig(): Pick<UserConfig, "plugins"> {
+export function getAxiosConfig(): Pick<UserConfig, "plugins"> {
   return {
     plugins: [
-      // 1. OAS 解析器
+      // 1. OAS Parser
       pluginOas(),
 
-      // 2. 生成 TypeScript 类型
+      // 2. Generate TypeScript Types
       pluginTs({
         output: {
           path: "./types",
@@ -28,10 +38,10 @@ export function getCommonConfig(): Pick<UserConfig, "plugins"> {
         optionalType: "questionTokenAndUndefined",
       }),
 
-      // 3. 生成 API 客户端（Fetch）
+      // 3. Generate API Clients (Axios)
       pluginClient({
         output: {
-          path: "./clients/fetch",
+          path: "./clients/axios",
           barrelType: "named",
           banner: "/* eslint-disable no-alert, no-console */",
           footer: "",
@@ -55,25 +65,24 @@ export function getCommonConfig(): Pick<UserConfig, "plugins"> {
         ],
         pathParamsType: "object",
         dataReturnType: "full",
-        client: "fetch",
+        client: "axios", // Use Axios instead of Fetch
       }),
     ],
   };
 }
 
 /**
- * 创建自定义 API 配置
+ * Create Axios API configuration
  */
-export function createApiConfig(options: {
+export function createAxiosConfig(options: {
   input: string;
   output: string;
   clean?: boolean;
-  clientType?: "fetch" | "axios";
 }): UserConfig {
-  const { input, output, clean = false, clientType = "fetch" } = options;
+  const { input, output, clean = false } = options;
 
   return {
-    ...getCommonConfig(),
+    ...getAxiosConfig(),
     input: {
       path: input,
     },

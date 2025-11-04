@@ -9,7 +9,7 @@ import type { PatchFunction, ProcessedSwagger } from "./types.js";
 export function patchGiteeTimestamp(content: string): string {
   let patched = content;
 
-  // 修复 Timestamp 和 TimeStamp （不区分大小写）
+  // 修复 Timestamp 和 TimeStamp（不区分大小写）
   patched = patched.replace(
     /"type":\s*"Timestamp"/gi,
     `"type": "string", "format": "date-time"`
@@ -38,13 +38,13 @@ export async function fetchSwagger(input: string): Promise<string> {
     console.log(`📥 从 URL 获取 Swagger: ${input}`);
     const response = await fetch(input);
     if (!response.ok) {
-      throw new Error(`❌ 获取 Swagger 失败: ${response.statusText}`);
+      throw new Error(`❌ 获取 Swagger 失败：${response.statusText}`);
     }
     return await response.text();
   } else {
     const resolvedPath = path.resolve(input);
     if (!fs.existsSync(resolvedPath)) {
-      throw new Error(`❌ 文件不存在: ${resolvedPath}`);
+      throw new Error(`❌ 文件不存在：${resolvedPath}`);
     }
     console.log(`📂 从本地文件读取 Swagger: ${resolvedPath}`);
     return fs.readFileSync(resolvedPath, "utf-8");
@@ -104,7 +104,7 @@ export async function convertToOpenAPI3(
     return JSON.stringify(result.openapi, null, 2);
   } catch (error) {
     throw new Error(
-      `❌ Swagger 2.0 转换失败: ${error instanceof Error ? error.message : error}`
+      `❌ Swagger 2.0 转换失败：${error instanceof Error ? error.message : error}`
     );
   }
 }
@@ -130,7 +130,7 @@ export async function processSwagger(
 
   // 3. 检测版本
   const version = detectSwaggerVersion(content);
-  console.log(`📋 检测到 Swagger 版本: ${version}`);
+  console.log(`📋 检测到 Swagger 版本：${version}`);
 
   // 4. 转换为 OpenAPI 3.x（如果需要）
   let isConverted = false;
