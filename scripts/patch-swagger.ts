@@ -1,13 +1,27 @@
 import fs from "fs";
 import path from "path";
 
-// 1. 从命令行获取目标路径，如果没有提供，则使用默认值
-const customPath = process.argv[2];
-const localPath = customPath
-  ? path.resolve(customPath) // 使用传入的路径
-  : path.resolve("./swagger-v5.json"); // 默认路径
+/**
+ * Generic Swagger patch script
+ *
+ * Usage:
+ *   tsx scripts/patch-swagger.ts <swagger-url> <output-path>
+ *
+ * Examples:
+ *   tsx scripts/patch-swagger.ts https://api.example.com/swagger.json ./swagger.json
+ *   tsx scripts/patch-swagger.ts https://gitee.com/api/v5/doc_json ./swagger-v5.json
+ */
 
-const url = "https://gitee.com/api/v5/doc_json";
+// Parse command line arguments
+const url = process.argv[2];
+const outputPath = process.argv[3];
+
+if (!url || !outputPath) {
+  console.error(`❌ Usage: tsx scripts/patch-swagger.ts <swagger-url> <output-path>`);
+  process.exit(1);
+}
+
+const localPath = path.resolve(outputPath);
 
 async function main() {
   console.log(`📥 Fetching Swagger from: ${url}`);
@@ -16,7 +30,7 @@ async function main() {
 
   let text = await res.text();
 
-  // 修复不规范的 Timestamp 类型
+  // Fix non-standard "Timestamp" type (common in Gitee API)
   text = text.replace(
     /"type":\s*"Timestamp"/gi,
     `"type": "string", "format": "date-time"`

@@ -1,6 +1,6 @@
 {
   "name": "@miaoosi/swagger2ts",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "type": "module",
   "description": "Generate TypeScript types and API clients from OpenAPI/Swagger specifications",
   "author": "Chaos",
@@ -23,12 +23,12 @@
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "https://github.com/knight174/Gefe-API-Generator.git"
+    "url": "https://github.com/knight174/swagger2ts.git"
   },
   "bugs": {
-    "url": "https://github.com/knight174/Gefe-API-Generator/issues"
+    "url": "https://github.com/knight174/swagger2ts/issues"
   },
-  "homepage": "https://github.com/knight174/Gefe-API-Generator#readme",
+  "homepage": "https://github.com/knight174/swagger2ts#readme",
   "publishConfig": {
     "access": "public",
     "registry": "https://registry.npmjs.org/"
@@ -38,7 +38,8 @@
     "dev": "tsx bin/swagger2ts.ts",
     "prepublishOnly": "pnpm run build",
     "prekubb": "node scripts/patch-swagger.js",
-    "generate:api": "npx kubb"
+    "generate:api": "npx kubb",
+    "release": "standard-version"
   },
   "dependencies": {
     "@kubb/core": "^4.4.1",
@@ -53,6 +54,7 @@
   "devDependencies": {
     "@types/node": "^20",
     "@types/swagger2openapi": "^7.0.4",
+    "standard-version": "^9.5.0",
     "tsx": "^4.20.6",
     "typescript": "^5"
   }
