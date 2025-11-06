@@ -2,6 +2,17 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [0.3.0](https://github.com/knight174/swagger2ts/compare/v0.2.1...v0.3.0) (2025-11-06)
+
+
+### ⚠ BREAKING CHANGES
+
+* **config:** GefeConfig interface renamed to Swagger2TsConfig
+
+### Features
+
+* **config:** add multi-source configuration support with config file loader ([cff792e](https://github.com/knight174/swagger2ts/commit/cff792ea24c8dd96554bb296bd6dcc18cf746371))
+
 ### [0.2.1](https://github.com/knight174/swagger2ts/compare/v0.2.0...v0.2.1) (2025-11-06)
 
 ## 0.2.0 (2025-11-05)
