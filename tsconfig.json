@@ -20,13 +20,6 @@
   "include": [
     "src/**/*",
     "bin/**/*",
-    "templates/**/*",
-    "config/**/*"
-  ],
-  "exclude": [
-    "node_modules",
-    "dist",
-    "swaggers",
-    "scripts"
+    "templates/**/*"
   ]
 }

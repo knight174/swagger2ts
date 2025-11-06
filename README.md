@@ -213,7 +213,6 @@ pnpm run dev -- -i ./__mock__/swagger.json -o ./api/test
 
 - `pnpm run build`: Compile TypeScript to `dist/`
 - `pnpm run dev`: Run CLI in development mode with tsx
-- `pnpm run generate:api`: Legacy generation using kubb.config.ts
 - `pnpm run prepublishOnly`: Pre-publish build check
 
 ### Project Structure
@@ -274,20 +273,6 @@ npx swagger2ts -i ./swagger.json -o ./src/api --convert-to-v3
 ```
 
 ## Migration Guide
-
-### From Legacy `kubb.config.ts`
-
-**Before:**
-
-```bash
-pnpm run generate:api
-```
-
-**After:**
-
-```bash
-npx swagger2ts -i ./swagger.json -o ./dist/api
-```
 
 ### From Direct Kubb Usage
 

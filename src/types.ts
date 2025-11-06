@@ -1,5 +1,3 @@
-import type { PluginContext } from "@kubb/core";
-
 /**
  * CLI 选项
  */

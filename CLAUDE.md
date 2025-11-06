@@ -20,12 +20,6 @@ pnpm run dev
 ```
 Runs the CLI directly with `tsx` without compiling (useful for development).
 
-### Generate API Clients (Legacy)
-```bash
-pnpm run generate:api
-```
-Uses the legacy Kubb config (`kubb.config.ts`) to generate API clients. Runs `prekubb` hook first to patch Swagger files.
-
 ### CLI Usage (Primary Method)
 ```bash
 # Using npx

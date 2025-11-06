@@ -40,7 +40,7 @@ export function readCache(outputDir: string): CacheMetadata | null {
     const content = fs.readFileSync(cacheFile, "utf-8");
     return JSON.parse(content) as CacheMetadata;
   } catch (error) {
-    console.warn(`⚠️  读取缓存文件失败: ${error}`);
+    console.warn(`⚠️  读取缓存文件失败：${error}`);
     return null;
   }
 }

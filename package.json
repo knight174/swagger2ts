@@ -37,8 +37,6 @@
     "build": "tsc",
     "dev": "tsx bin/swagger2ts.ts",
     "prepublishOnly": "pnpm run build",
-    "prekubb": "node scripts/patch-swagger.js",
-    "generate:api": "npx kubb",
     "release": "standard-version"
   },
   "dependencies": {
