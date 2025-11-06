@@ -32,6 +32,8 @@ cli
   .command("[action]", "生成 API 客户端")
   .option("-i, --input <path>", "Swagger 文件路径或 URL")
   .option("-o, --output <path>", "输出目录")
+  .option("-c, --config <path>", "配置文件路径")
+  .option("-s, --source <names>", "指定要生成的源（多个用逗号分隔，如：v5,v7）")
   .option("--convert-to-v3", "将 Swagger 2.0 转换为 OpenAPI 3.x")
   .option("--no-cache", "跳过增量检查，强制重新生成")
   .option("--clean", "清空输出目录")

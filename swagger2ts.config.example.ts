@@ -1,26 +1,26 @@
-import type { GefeConfig } from "./src/types";
+import { defineConfig } from "./src/config-loader";
 import { builtinPatches } from "./src/swagger-processor";
 
 /**
- * Gefe API Generator 配置示例
+ * Swagger2TS 配置示例
  *
- * 在项目根目录创建 `gefe.config.ts` 文件来自定义配置
+ * 在项目根目录创建 `swagger2ts.config.ts` 或 `swagger2ts.config.js` 文件来自定义配置
  */
-const config: GefeConfig = {
+export default defineConfig({
   // 定义多个 API 源
   sources: {
-    // 主 API
-    main: {
-      input: "./swagger/main.json",
-      output: "./src/api/main",
+    // 主 API (v5)
+    v5: {
+      input: "https://api.example.com/v5/swagger.json",
+      output: "./src/api/v5",
       convertToV3: true,
       clean: false,
     },
 
-    // 管理后台 API
-    admin: {
-      input: "https://admin.example.com/swagger.json",
-      output: "./src/api/admin",
+    // 新版 API (v7)
+    v7: {
+      input: "https://api.example.com/v7/swagger.json",
+      output: "./src/api/v7",
       convertToV3: true,
       clean: false,
       // 可为每个源单独配置补丁
@@ -32,6 +32,14 @@ const config: GefeConfig = {
           return content.replace(/"type": "CustomType"/g, '"type": "string"');
         },
       ],
+    },
+
+    // 管理后台 API
+    admin: {
+      input: "./swagger/admin.json",
+      output: "./src/api/admin",
+      convertToV3: false,
+      clean: false,
     },
   },
 
@@ -46,8 +54,6 @@ const config: GefeConfig = {
   // 自定义缓存目录（可选）
   cacheDir: ".api-gen-cache",
 
-  // 是否转换为 OpenAPI 3.x
+  // 是否转换为 OpenAPI 3.x（全局默认值，可被源配置覆盖）
   convertToV3: true,
-};
-
-export default config;
+});

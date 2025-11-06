@@ -148,9 +148,13 @@ export async function processSwagger(
 
 /**
  * 保存 Swagger 到临时文件
+ * 注意: 临时文件保存在输出目录的父目录中,避免被 clean 选项删除
  */
 export function saveTempSwagger(content: string, outputDir: string): string {
-  const tempDir = path.join(outputDir, ".temp");
+  const parentDir = path.dirname(outputDir);
+  const baseName = path.basename(outputDir);
+  const tempDir = path.join(parentDir, `.temp-${baseName}`);
+
   if (!fs.existsSync(tempDir)) {
     fs.mkdirSync(tempDir, { recursive: true });
   }

@@ -22,8 +22,12 @@ Runs the CLI directly with `tsx` without compiling (useful for development).
 
 ### CLI Usage (Primary Method)
 ```bash
-# Using npx
+# Single source generation
 npx @miaoosi/swagger2ts -i ./swagger.json -o ./dist/api
+
+# Multi-source generation with config file
+npx @miaoosi/swagger2ts  # Generates all sources in config
+npx @miaoosi/swagger2ts --source v5,v7  # Generate specific sources
 
 # Using pnpm dev for development (without --)
 pnpm dev -i ./swagger.json -o ./dist/api
@@ -42,10 +46,18 @@ The project follows a modular architecture with clear separation between CLI, Sw
 
 **`src/cli.ts`** - Main CLI Logic
 - Parses command-line options using `cac`
-- Supports two configuration sources (priority order):
-  1. CLI parameters (`-i`, `-o`)
-  2. Environment variables (`SWAGGER_INPUT`, `OUTPUT_PATH`)
+- Supports three configuration sources (priority order):
+  1. Config file (`swagger2ts.config.ts`)
+  2. CLI parameters (`-i`, `-o`)
+  3. Environment variables (`SWAGGER_INPUT`, `OUTPUT_PATH`)
 - Coordinates the entire generation workflow
+- Handles multi-source generation
+
+**`src/config-loader.ts`** - Configuration File Loader
+- Searches for config files in project root
+- Uses `bundle-require` to load `.ts` and `.js` config files
+- Exports `findConfigFile()`, `loadConfigFile()`, and `defineConfig()` helper
+- Validates config structure
 
 **`src/swagger-processor.ts`** - Swagger Processing Pipeline
 - Fetches Swagger from local files or URLs
@@ -66,8 +78,9 @@ The project follows a modular architecture with clear separation between CLI, Sw
 - Handles input/output paths and clean options
 
 **`src/types.ts`** - TypeScript Type Definitions
-- Defines all interfaces: `CliOptions`, `ApiSource`, `GefeConfig`, `CacheMetadata`, etc.
+- Defines all interfaces: `CliOptions`, `ApiSource`, `Swagger2TsConfig`, `CacheMetadata`, etc.
 - `PatchFunction` type for custom Swagger patches
+- `GefeConfig` kept as deprecated alias for backwards compatibility
 
 **`templates/base.config.ts`** - Reusable Kubb Configuration
 - Exports `getCommonConfig()` - returns standard Kubb plugin configuration for Fetch clients
@@ -85,24 +98,42 @@ The project follows a modular architecture with clear separation between CLI, Sw
 
 ### Configuration System
 
-The tool supports multiple configuration methods:
+The tool supports multiple configuration methods (in priority order):
 
-**1. CLI Parameters**
+**1. Config File** (`swagger2ts.config.ts` or `.js`)
+```typescript
+import { defineConfig } from '@miaoosi/swagger2ts/config-loader'
+
+export default defineConfig({
+  sources: {
+    v5: {
+      input: 'https://api.com/v5/swagger.json',
+      output: './src/api/v5',
+    },
+    v7: {
+      input: 'https://api.com/v7/swagger.json',
+      output: './src/api/v7',
+    }
+  },
+  convertToV3: true,
+  cache: true,
+})
+```
+
+Usage:
+- `npx @miaoosi/swagger2ts` - Generate all sources
+- `npx @miaoosi/swagger2ts --source v5,v7` - Generate specific sources
+- `npx @miaoosi/swagger2ts --config custom.config.ts` - Use custom config path
+
+**2. CLI Parameters**
 ```bash
 npx @miaoosi/swagger2ts -i ./swagger.json -o ./src/api
 ```
 
-**2. Environment Variables** (`.env` file)
+**3. Environment Variables** (`.env` file)
 - `SWAGGER_INPUT` - Input Swagger file/URL
 - `OUTPUT_PATH` - Output directory
 - `CONVERT_TO_V3` - Convert Swagger 2.0 to OpenAPI 3.x
-
-**3. Project Config File** (`gefe.config.ts`)
-See `gefe.config.example.ts` for structure. Supports:
-- Multiple API sources
-- Global and per-source patches
-- Cache settings
-- Swagger 2.0 conversion toggle
 
 ### Generated Code Structure
 

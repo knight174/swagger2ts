@@ -5,6 +5,7 @@ export interface CliOptions {
   input?: string;
   output?: string;
   config?: string;
+  source?: string;
   convertToV3?: boolean;
   noCache?: boolean;
   clean?: boolean;
@@ -26,7 +27,7 @@ export interface ApiSource {
 /**
  * 项目配置文件
  */
-export interface GefeConfig {
+export interface Swagger2TsConfig {
   sources?: Record<string, ApiSource>;
   patches?: PatchFunction[];
   convertToV3?: boolean;

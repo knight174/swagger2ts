@@ -56,6 +56,8 @@ npx swagger2ts -i <path-to-swagger-or-url> -o <output-directory>
 |--------|-------|-------------|
 | `--input <path>` | `-i` | Swagger file path or URL |
 | `--output <path>` | `-o` | Output directory |
+| `--config <path>` | `-c` | Config file path |
+| `--source <names>` | `-s` | Source names to generate (comma-separated, e.g., v5,v7) |
 | `--convert-to-v3` | | Convert Swagger 2.0 to OpenAPI 3.x |
 | `--force` | | Force regeneration (skip cache check) |
 | `--no-cache` | | Same as `--force` |
@@ -64,9 +66,67 @@ npx swagger2ts -i <path-to-swagger-or-url> -o <output-directory>
 
 ## Configuration Methods
 
-Swagger2TS supports two configuration methods, with the following priority order:
+Swagger2TS supports three configuration methods, with the following priority order:
 
-### 1. CLI Arguments (Higher Priority)
+### 1. Config File (Recommended for Multiple Sources)
+
+Create a `swagger2ts.config.ts` (or `.js`) file in your project root:
+
+```typescript
+import { defineConfig } from '@miaoosi/swagger2ts';
+import { builtinPatches } from '@miaoosi/swagger2ts/swagger-processor';
+
+export default defineConfig({
+  sources: {
+    // API v5
+    v5: {
+      input: 'https://api.example.com/v5/swagger.json',
+      output: './src/api/v5',
+      convertToV3: true,
+    },
+    // API v7
+    v7: {
+      input: 'https://api.example.com/v7/swagger.json',
+      output: './src/api/v7',
+      convertToV3: true,
+    },
+    // Admin API
+    admin: {
+      input: './swagger/admin.json',
+      output: './src/api/admin',
+      patches: [builtinPatches.giteeTimestamp],
+    },
+  },
+  // Global settings
+  convertToV3: true,
+  cache: true,
+});
+```
+
+Then run:
+
+```bash
+# Generate all sources
+npx swagger2ts
+
+# Generate specific sources only
+npx swagger2ts --source v5,v7
+
+# Override config with CLI flags
+npx swagger2ts --source v5 --force
+```
+
+**Supported config file names** (searched in this order):
+- `swagger2ts.config.ts`
+- `swagger2ts.config.mts`
+- `swagger2ts.config.js`
+- `swagger2ts.config.mjs`
+- `.swagger2tsrc.ts`
+- `.swagger2tsrc.mts`
+- `.swagger2tsrc.js`
+- `.swagger2tsrc.mjs`
+
+### 2. CLI Arguments
 
 Pass input/output directly via command line:
 
@@ -75,7 +135,7 @@ npx swagger2ts -i ./swagger.json -o ./src/api
 npx swagger2ts -i https://api.com/swagger.json -o ./src/api --clean
 ```
 
-### 2. Environment Variables
+### 3. Environment Variables
 
 Create a `.env` file in your project root:
 
@@ -95,6 +155,44 @@ You can also specify a custom `.env` file:
 
 ```bash
 npx swagger2ts --env .env.production
+```
+
+## Multi-Environment Setup
+
+For managing multiple API versions or environments, use the config file approach:
+
+```typescript
+// swagger2ts.config.ts
+import { defineConfig } from '@miaoosi/swagger2ts';
+
+export default defineConfig({
+  sources: {
+    dev: {
+      input: 'https://dev-api.example.com/swagger.json',
+      output: './src/api/dev',
+    },
+    staging: {
+      input: 'https://staging-api.example.com/swagger.json',
+      output: './src/api/staging',
+    },
+    production: {
+      input: 'https://api.example.com/swagger.json',
+      output: './src/api/prod',
+    },
+  },
+});
+```
+
+Usage:
+```bash
+# Generate all environments
+npx swagger2ts
+
+# Generate only dev
+npx swagger2ts --source dev
+
+# Generate dev and staging
+npx swagger2ts --source dev,staging
 ```
 
 ## Custom Swagger Patches
