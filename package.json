@@ -56,5 +56,6 @@
     "standard-version": "^9.5.0",
     "tsx": "^4.20.6",
     "typescript": "^5"
-  }
+  },
+  "engines": { "node": ">=20.0.0" }
 }
