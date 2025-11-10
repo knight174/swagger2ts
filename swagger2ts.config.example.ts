@@ -41,6 +41,40 @@ export default defineConfig({
       convertToV3: false,
       clean: false,
     },
+
+    // 高级示例：使用 Kubb 额外插件
+    // 需要先安装对应的插件包：pnpm add -D @kubb/plugin-zod @kubb/plugin-react-query
+    /*
+    advanced: {
+      input: "https://api.example.com/swagger.json",
+      output: "./src/api/advanced",
+      clientType: "axios",
+
+      // ✨ 使用 Kubb 原生配置添加额外插件
+      kubb: {
+        plugins: [
+          // 生成 Zod schemas 用于运行时验证
+          // import { pluginZod } from '@kubb/plugin-zod';
+          // pluginZod({
+          //   output: { path: './zod' },
+          //   typed: true,
+          // }),
+
+          // 生成 React Query hooks
+          // import { pluginReactQuery } from '@kubb/plugin-react-query';
+          // pluginReactQuery({
+          //   output: { path: './hooks' },
+          //   client: 'axios',
+          // }),
+        ],
+
+        // Kubb 钩子
+        hooks: {
+          done: () => console.log('✨ 高级 API 生成完成！'),
+        },
+      },
+    },
+    */
   },
 
   // 全局补丁（应用于所有源）

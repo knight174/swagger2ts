@@ -24,6 +24,20 @@ export interface ApiSource {
   patches?: PatchFunction[];
   clientType?: "fetch" | "axios";
   baseURL?: string;
+
+  /**
+   * Kubb 原生配置（可选）
+   * 用于添加额外的 Kubb 插件或覆盖默认配置
+   * @example
+   * kubb: {
+   *   plugins: [pluginZod({ output: { path: './zod' } })]
+   * }
+   */
+  kubb?: {
+    plugins?: any[];
+    hooks?: any;
+    [key: string]: any;
+  };
 }
 
 /**
@@ -72,4 +86,9 @@ export interface GeneratorOptions {
   configPath?: string;
   clientType?: "fetch" | "axios";
   baseURL?: string;
+  kubbOptions?: {
+    plugins?: any[];
+    hooks?: any;
+    [key: string]: any;
+  };
 }

@@ -57,7 +57,14 @@ function copyClientConfigTemplate(
  * 使用 Kubb 生成 API 客户端
  */
 export async function generateAPI(options: GeneratorOptions): Promise<void> {
-  const { input, output, clean = false, clientType = "axios", baseURL } = options;
+  const {
+    input,
+    output,
+    clean = false,
+    clientType = "axios",
+    baseURL,
+    kubbOptions,
+  } = options;
 
   console.log("🚀 开始生成 API 客户端...");
 
@@ -67,6 +74,7 @@ export async function generateAPI(options: GeneratorOptions): Promise<void> {
     clean,
     clientType,
     baseURL,
+    kubbOptions,
   });
 
   try {

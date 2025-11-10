@@ -82,6 +82,7 @@ The project follows a modular architecture with clear separation between CLI, Sw
 - `PatchFunction` type for custom Swagger patches
 - `GefeConfig` kept as deprecated alias for backwards compatibility
 - Supports `clientType` and `baseURL` configuration options
+- Supports `kubb` field in `ApiSource` for extending with Kubb native plugins
 
 **`templates/base.config.ts`** - Reusable Kubb Configuration
 - Exports `createApiConfig()` - factory function for creating custom configs
@@ -371,6 +372,80 @@ The `examples/` directory contains practical code samples demonstrating various 
 - **`README.md`** - Complete examples documentation
 
 When adding new features, consider adding a corresponding example to help users understand the functionality.
+
+## Extending with Kubb Plugins
+
+Swagger2TS provides default code generation (TypeScript types + API clients), but you can extend it with additional Kubb plugins to generate more outputs like Zod schemas, React Query hooks, SWR hooks, etc.
+
+### Available Kubb Plugins
+
+- `@kubb/plugin-zod` - Generate Zod schemas for runtime validation
+- `@kubb/plugin-react-query` - Generate React Query hooks
+- `@kubb/plugin-vue-query` - Generate Vue Query hooks
+- `@kubb/plugin-swr` - Generate SWR hooks
+- `@kubb/plugin-faker` - Generate mock data
+- `@kubb/plugin-msw` - Generate MSW handlers
+- And more...
+
+### Usage
+
+Add extra plugins via the `kubb` field in your source configuration:
+
+```typescript
+// swagger2ts.config.ts
+import { defineConfig } from '@miaoosi/swagger2ts';
+import { pluginZod } from '@kubb/plugin-zod';
+import { pluginReactQuery } from '@kubb/plugin-react-query';
+
+export default defineConfig({
+  sources: {
+    api: {
+      input: 'https://api.example.com/swagger.json',
+      output: './src/api',
+      clientType: 'axios',
+
+      // ✨ Extend with Kubb plugins
+      kubb: {
+        plugins: [
+          // Generate Zod schemas
+          pluginZod({
+            output: { path: './zod' },
+            typed: true,
+          }),
+
+          // Generate React Query hooks
+          pluginReactQuery({
+            output: { path: './hooks' },
+            client: 'axios',
+          }),
+        ],
+
+        // Optional: Kubb hooks
+        hooks: {
+          done: () => console.log('✨ Generation complete!'),
+        },
+      },
+    },
+  },
+});
+```
+
+**Generated structure:**
+```
+src/api/
+├── types/         # ← Default: TypeScript types
+├── clients/axios/ # ← Default: Axios clients
+├── zod/          # ← Extra: Zod schemas
+└── hooks/        # ← Extra: React Query hooks
+```
+
+**Benefits:**
+- ✅ Keep default behavior (types + clients)
+- ✅ Add extra code generation as needed
+- ✅ Use any Kubb plugin from the ecosystem
+- ✅ Full Kubb configuration support
+
+See `swagger2ts.config.example.ts` for more examples.
 
 ## Client Types
 

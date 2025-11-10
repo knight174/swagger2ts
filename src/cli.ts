@@ -171,6 +171,7 @@ async function runSourceGeneration(
     patches = [],
     clientType = "axios",
     baseURL,
+    kubb,
   } = source;
 
   // 解析路径
@@ -217,6 +218,7 @@ async function runSourceGeneration(
       clean,
       clientType,
       baseURL,
+      kubbOptions: kubb,
     });
 
     // 更新缓存
