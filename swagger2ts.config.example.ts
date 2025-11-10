@@ -51,9 +51,6 @@ export default defineConfig({
   // 是否启用增量缓存
   cache: true,
 
-  // 自定义缓存目录（可选）
-  cacheDir: ".api-gen-cache",
-
   // 是否转换为 OpenAPI 3.x（全局默认值，可被源配置覆盖）
   convertToV3: true,
 });

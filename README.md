@@ -2,6 +2,8 @@
 
 Generate type-safe TypeScript API clients from OpenAPI/Swagger specifications with incremental generation support.
 
+English | [简体中文](./README.zh-CN.md)
+
 ## Features
 
 - **Type-Safe**: Generates TypeScript types and fully-typed API clients using [Kubb](https://kubb.dev/)
@@ -307,7 +309,13 @@ pnpm install
 pnpm run build
 
 # Run in development mode
-pnpm run dev -i ./__mock__/swagger.json -o ./api/test
+# generated from local Swagger files
+pnpm run dev -i ./__mock__/swagger.json -o ./api/gen
+pnpm run dev -i ./__mock__/swagger-v2.json -o ./api/gen-v2
+pnpm run dev -i ./__mock__/swagger-v2.json -o ./api/gen-v3 --convert-to-v3
+# generated from remote Swagger URL
+pnpm run dev -i https://petstore.swagger.io/v2/swagger.json -o ./api/petstore-v2
+pnpm run dev -i https://petstore.swagger.io/v2/swagger.json -o ./api/petstore --convert-to-v3
 ```
 
 ### Scripts

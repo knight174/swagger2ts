@@ -51,31 +51,7 @@
         }
       }
     },
-    "/users/{id}": {
-      "get": {
-        "tags": ["User"],
-        "summary": "获取用户信息",
-        "parameters": [
-          {
-            "name": "id",
-            "in": "path",
-            "required": true,
-            "schema": { "type": "integer" }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "用户详情",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/User"
-                }
-              }
-            }
-          }
-        }
-      },
+    "/users": {
       "post": {
         "tags": ["User"],
         "summary": "创建新用户",
@@ -92,6 +68,32 @@
         "responses": {
           "201": {
             "description": "用户创建成功",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/User"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/users/{id}": {
+      "get": {
+        "tags": ["User"],
+        "summary": "获取用户信息",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": { "type": "integer" }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "用户详情",
             "content": {
               "application/json": {
                 "schema": {
