@@ -12,6 +12,7 @@
 - **灵活配置**: 支持 CLI 参数、环境变量或配置文件
 - **自定义补丁**: 内置和可扩展的补丁系统，用于处理非标准的 Swagger 格式
 - **多 API 源**: 通过配置文件支持管理多个 API 源
+- **可扩展**: 添加 Zod schemas、React Query hooks 或任何 Kubb 插件来扩展代码生成
 
 ## 快速开始
 
@@ -209,6 +210,67 @@ npx swagger2ts --source dev,staging
 
 有关创建自定义补丁的示例，请参见 [examples/04-custom-patches.ts](./examples/04-custom-patches.ts)。
 
+## 使用 Kubb 插件扩展
+
+Swagger2TS 默认生成 TypeScript 类型和 API 客户端，但你可以通过添加 Kubb 插件来扩展功能，生成 Zod schemas、React Query hooks 等。
+
+### 可用插件
+
+- **[@kubb/plugin-zod](https://kubb.dev/plugins/plugin-zod/)** - 生成 Zod schemas 用于运行时验证
+- **[@kubb/plugin-react-query](https://kubb.dev/plugins/plugin-react-query/)** - 生成 React Query hooks
+- **[@kubb/plugin-swr](https://kubb.dev/plugins/plugin-swr/)** - 生成 SWR hooks
+- **[@kubb/plugin-vue-query](https://kubb.dev/plugins/plugin-vue-query/)** - 生成 Vue Query composables
+- **[@kubb/plugin-faker](https://kubb.dev/plugins/plugin-faker/)** - 使用 Faker.js 生成 mock 数据
+- **[@kubb/plugin-msw](https://kubb.dev/plugins/plugin-msw/)** - 生成 MSW (Mock Service Worker) handlers
+
+### 示例
+
+```typescript
+// swagger2ts.config.ts
+import { defineConfig } from '@miaoosi/swagger2ts';
+import { pluginZod } from '@kubb/plugin-zod';
+import { pluginReactQuery } from '@kubb/plugin-react-query';
+
+export default defineConfig({
+  sources: {
+    api: {
+      input: 'https://api.example.com/swagger.json',
+      output: './src/api',
+      clientType: 'axios',
+
+      // 添加 Kubb 插件
+      kubb: {
+        plugins: [
+          // 生成 Zod schemas
+          pluginZod({
+            output: { path: './zod' },
+            typed: true,
+          }),
+
+          // 生成 React Query hooks
+          pluginReactQuery({
+            output: { path: './hooks' },
+            client: 'axios',
+          }),
+        ],
+      },
+    },
+  },
+});
+```
+
+**生成的目录结构：**
+
+```bash
+src/api/
+├── types/         # ← TypeScript 类型（默认）
+├── clients/axios/ # ← Axios 客户端（默认）
+├── zod/          # ← Zod schemas（来自插件）
+└── hooks/        # ← React Query hooks（来自插件）
+```
+
+更多示例请参见 [swagger2ts.config.example.ts](./swagger2ts.config.example.ts)。
+
 ## 生成的代码结构
 
 运行生成器会创建以下结构：
@@ -337,16 +399,16 @@ swagger2ts/
 │   ├── swagger-processor.ts       # Swagger 补丁和转换
 │   └── types.ts                   # TypeScript 定义
 ├── templates/
-│   ├── base.config.ts             # 可重用的 Kubb 配置（Fetch）
-│   └── axios-client.config.ts     # Axios 客户端配置
+│   └── base.config.ts             # 可重用的 Kubb 配置
 ├── examples/
 │   ├── 01-basic-usage.ts          # 基本用法示例
 │   ├── 02-with-authentication.ts
 │   ├── 03-multiple-api-sources.ts
 │   ├── 04-custom-patches.ts
-│   ├── 05-config-file.ts
 │   ├── 06-env-variables.sh
 │   ├── 07-axios-client.ts
+│   ├── 08-runtime-baseurl.ts
+│   ├── 09-config-with-client-type.ts
 │   └── README.md                  # 示例文档
 └── __mock__/
     └── swagger.json               # 演示 Swagger 文件

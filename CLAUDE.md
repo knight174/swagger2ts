@@ -364,12 +364,13 @@ The `examples/` directory contains practical code samples demonstrating various 
 - **`02-with-authentication.ts`** - Runtime client configuration and authentication
 - **`03-multiple-api-sources.ts`** - Managing multiple API sources
 - **`04-custom-patches.ts`** - Creating custom patch functions
-- **`05-config-file.ts`** - Using config file for advanced configuration
 - **`06-env-variables.sh`** - Environment variable configuration
 - **`07-axios-client.ts`** - Using Axios instead of Fetch with interceptors
 - **`08-runtime-baseurl.ts`** - Runtime baseURL configuration examples
 - **`09-config-with-client-type.ts`** - Multi-source with different client types
 - **`README.md`** - Complete examples documentation
+
+For advanced configuration examples, see [swagger2ts.config.example.ts](./swagger2ts.config.example.ts).
 
 When adding new features, consider adding a corresponding example to help users understand the functionality.
 

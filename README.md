@@ -12,6 +12,7 @@ English | [简体中文](./README.zh-CN.md)
 - **Flexible Configuration**: CLI arguments, environment variables, or config files
 - **Custom Patches**: Built-in and extensible patch system for non-standard Swagger formats
 - **Multiple API Sources**: Support for managing multiple API sources via config file
+- **Extensible**: Add Zod schemas, React Query hooks, or any Kubb plugin to extend code generation
 
 ## Quick Start
 
@@ -209,6 +210,67 @@ Patches are functions that transform Swagger JSON content before generation. Use
 
 For examples of creating custom patches, see [examples/04-custom-patches.ts](./examples/04-custom-patches.ts).
 
+## Extending with Kubb Plugins
+
+Swagger2TS generates TypeScript types and API clients by default, but you can extend it with additional Kubb plugins to generate Zod schemas, React Query hooks, and more.
+
+### Available Plugins
+
+- **[@kubb/plugin-zod](https://kubb.dev/plugins/plugin-zod/)** - Generate Zod schemas for runtime validation
+- **[@kubb/plugin-react-query](https://kubb.dev/plugins/plugin-react-query/)** - Generate React Query hooks
+- **[@kubb/plugin-swr](https://kubb.dev/plugins/plugin-swr/)** - Generate SWR hooks
+- **[@kubb/plugin-vue-query](https://kubb.dev/plugins/plugin-vue-query/)** - Generate Vue Query composables
+- **[@kubb/plugin-faker](https://kubb.dev/plugins/plugin-faker/)** - Generate mock data with Faker.js
+- **[@kubb/plugin-msw](https://kubb.dev/plugins/plugin-msw/)** - Generate MSW (Mock Service Worker) handlers
+
+### Example
+
+```typescript
+// swagger2ts.config.ts
+import { defineConfig } from '@miaoosi/swagger2ts';
+import { pluginZod } from '@kubb/plugin-zod';
+import { pluginReactQuery } from '@kubb/plugin-react-query';
+
+export default defineConfig({
+  sources: {
+    api: {
+      input: 'https://api.example.com/swagger.json',
+      output: './src/api',
+      clientType: 'axios',
+
+      // Add Kubb plugins
+      kubb: {
+        plugins: [
+          // Generate Zod schemas
+          pluginZod({
+            output: { path: './zod' },
+            typed: true,
+          }),
+
+          // Generate React Query hooks
+          pluginReactQuery({
+            output: { path: './hooks' },
+            client: 'axios',
+          }),
+        ],
+      },
+    },
+  },
+});
+```
+
+**Generated structure:**
+
+```bash
+src/api/
+├── types/         # ← TypeScript types (default)
+├── clients/axios/ # ← Axios clients (default)
+├── zod/          # ← Zod schemas (from plugin)
+└── hooks/        # ← React Query hooks (from plugin)
+```
+
+For more examples, see [swagger2ts.config.example.ts](./swagger2ts.config.example.ts).
+
 ## Generated Code Structure
 
 Running the generator creates the following structure:
@@ -337,16 +399,16 @@ swagger2ts/
 │   ├── swagger-processor.ts       # Swagger patching & conversion
 │   └── types.ts                   # TypeScript definitions
 ├── templates/
-│   ├── base.config.ts             # Reusable Kubb config (Fetch)
-│   └── axios-client.config.ts     # Axios client configuration
+│   └── base.config.ts             # Reusable Kubb config
 ├── examples/
 │   ├── 01-basic-usage.ts          # Basic usage example
 │   ├── 02-with-authentication.ts
 │   ├── 03-multiple-api-sources.ts
 │   ├── 04-custom-patches.ts
-│   ├── 05-config-file.ts
 │   ├── 06-env-variables.sh
 │   ├── 07-axios-client.ts
+│   ├── 08-runtime-baseurl.ts
+│   ├── 09-config-with-client-type.ts
 │   └── README.md                  # Examples documentation
 └── __mock__/
     └── swagger.json               # Demo Swagger file

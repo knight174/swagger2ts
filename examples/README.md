@@ -34,8 +34,6 @@ Manage and use multiple API sources in the same project.
 - Importing from different API sources
 - Using multiple clients together
 
-**Shell script:** `03-multiple-api-sources.sh` - Generate multiple API clients
-
 ### 4. Custom Patches (`04-custom-patches.ts`)
 
 Create custom patch functions to fix non-standard Swagger formats.
@@ -67,6 +65,26 @@ Use Axios instead of Fetch for HTTP requests.
 - Advanced Axios features
 - Error handling with Axios
 
+### 7. Runtime BaseURL Configuration (`08-runtime-baseurl.ts`)
+
+Configure API base URL at runtime for different environments.
+
+**Key concepts:**
+
+- Runtime configuration
+- Environment-specific URLs
+- Dynamic header updates
+
+### 8. Multiple Client Types (`09-config-with-client-type.ts`)
+
+Use different client types (Fetch/Axios) for different API sources.
+
+**Key concepts:**
+
+- Per-source client type configuration
+- Mixing Fetch and Axios clients
+- Client-specific features
+
 ## Quick Start
 
 ### Generate from a local file
@@ -96,8 +114,8 @@ npx @miaoosi/swagger2ts -i ./swagger.json -o ./src/api --force
 ## Additional Resources
 
 - **Main Documentation:** See [README.md](../README.md) for complete documentation
-- **Configuration Examples:** See [gefe.config.example.ts](../gefe.config.example.ts)
-- **Environment Variables:** See [.env.example](../.env.example)
+- **Configuration Example:** See [swagger2ts.config.example.ts](../swagger2ts.config.example.ts) for advanced configuration
+- **Environment Variables:** See [.env.example](../.env.example) for environment variable configuration
 
 ## Need Help?
 
