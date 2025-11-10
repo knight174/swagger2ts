@@ -1,6 +1,6 @@
 {
   "name": "@miaoosi/swagger2ts",
-  "version": "0.3.2",
+  "version": "0.3.3",
   "type": "module",
   "description": "Generate TypeScript types and API clients from OpenAPI/Swagger specifications",
   "author": "Chaos",

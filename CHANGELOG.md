@@ -2,6 +2,14 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.3.3](https://github.com/knight174/swagger2ts/compare/v0.3.1...v0.3.3) (2025-11-10)
+
+
+### Features
+
+* add Chinese documentation and Swagger 2.0 mock data ([8b0670d](https://github.com/knight174/swagger2ts/commit/8b0670deb275367ab19c08e46e0aede0776b81d7))
+* add example configuration for multiple API sources with different client types ([7cd933d](https://github.com/knight174/swagger2ts/commit/7cd933db50b3fa3de840c7ed7b965d1ea34af327))
+
 ### [0.3.2](https://github.com/knight174/swagger2ts/compare/v0.3.1...v0.3.2) (2025-11-10)
 
 ### [0.3.1](https://github.com/knight174/swagger2ts/compare/v0.3.0...v0.3.1) (2025-11-07)
