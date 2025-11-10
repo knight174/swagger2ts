@@ -84,19 +84,12 @@ The project follows a modular architecture with clear separation between CLI, Sw
 - Supports `clientType` and `baseURL` configuration options
 
 **`templates/base.config.ts`** - Reusable Kubb Configuration
-- Exports `getCommonConfig()` - returns standard Kubb plugin configuration for Fetch clients
-- Exports `createApiConfig()` - factory function for creating custom configs with clientType support
+- Exports `createApiConfig()` - factory function for creating custom configs
+- Supports dynamic client type selection via `clientType` parameter ('fetch' or 'axios')
 - Plugin chain:
   1. `pluginOas()` - Parses OpenAPI/Swagger specs
   2. `pluginTs()` - Generates TypeScript types grouped by tag (no Controller suffix)
-  3. `pluginClient()` - Generates fetch or axios-based API clients
-- Supports dynamic client type selection (fetch/axios)
-
-**`templates/axios-client.config.ts`** - Axios Client Configuration
-- Exports `getAxiosConfig()` - returns Kubb plugin configuration for Axios clients
-- Exports `createAxiosConfig()` - factory function for Axios-based configs
-- Use when you need Axios features like interceptors, request cancellation, etc.
-- Requires `axios` to be installed in the consuming project
+  3. `pluginClient()` - Generates fetch or axios-based API clients based on clientType
 
 **`templates/client-config.*.template.ts`** - Runtime Client Configuration Templates
 - Auto-generated `client-config.ts` in output directory

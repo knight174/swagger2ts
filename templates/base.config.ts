@@ -4,66 +4,8 @@ import { pluginClient } from "@kubb/plugin-client";
 import type { UserConfig } from "@kubb/core";
 
 /**
- * 通用的 Kubb 配置
- * 可被所有 API 源复用
- */
-export function getCommonConfig(): Pick<UserConfig, "plugins"> {
-  return {
-    plugins: [
-      // 1. OAS 解析器
-      pluginOas(),
-
-      // 2. 生成 TypeScript 类型
-      pluginTs({
-        output: {
-          path: "./types",
-        },
-        group: {
-          type: "tag",
-          name: ({ group }) => `${group}`,
-        },
-        enumType: "asConst",
-        enumSuffix: "Enum",
-        unknownType: "unknown",
-        optionalType: "questionTokenAndUndefined",
-      }),
-
-      // 3. 生成 API 客户端（Fetch）
-      pluginClient({
-        output: {
-          path: "./clients/fetch",
-          barrelType: "named",
-          banner: "/* eslint-disable no-alert, no-console */",
-          footer: "",
-        },
-        group: {
-          type: "tag",
-          name: ({ group }: { group: string }) => `${group}Service`,
-        },
-        transformers: {
-          name: (name: string, type?: string) => {
-            return `${name}Client`;
-          },
-        },
-        operations: true,
-        parser: "client",
-        exclude: [
-          {
-            type: "tag",
-            pattern: "store",
-          },
-        ],
-        pathParamsType: "object",
-        dataReturnType: "full",
-        client: "fetch",
-        bundle: true,
-      } as any),
-    ],
-  };
-}
-
-/**
- * 创建自定义 API 配置
+ * 创建自定义 API 配置，最终会传递给 Kubb 去构建
+ * 支持 Fetch 和 Axios 客户端类型
  */
 export function createApiConfig(options: {
   input: string;

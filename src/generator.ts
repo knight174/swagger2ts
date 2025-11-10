@@ -16,7 +16,6 @@ function copyClientConfigTemplate(
   clientType: "fetch" | "axios"
 ): void {
   const templateFileName = `client-config.${clientType}.template.ts`;
-  // 尝试多个可能的路径
   const possiblePaths = [
     // 开发模式 (tsx 直接运行)
     path.join(process.cwd(), "templates", templateFileName),

@@ -142,8 +142,6 @@ async function runSingle(options: CliOptions): Promise<void> {
   input = input.startsWith("http") ? input : path.resolve(input);
   output = path.resolve(output);
 
-  // 注意: 这里不打印日志,在 runSourceGeneration 中统一打印
-
   const source: ApiSource = {
     input,
     output,
