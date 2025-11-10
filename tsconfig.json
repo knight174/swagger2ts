@@ -20,6 +20,7 @@
   "include": [
     "src/**/*",
     "bin/**/*",
-    "templates/**/*"
-  ]
+    "templates/base.config.ts",
+    "templates/axios-client.config.ts"
+  ],
 }

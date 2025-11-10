@@ -117,6 +117,7 @@ npx swagger2ts --source v5 --force
 ```
 
 **Supported config file names** (searched in this order):
+
 - `swagger2ts.config.ts`
 - `swagger2ts.config.mts`
 - `swagger2ts.config.js`
@@ -184,6 +185,7 @@ export default defineConfig({
 ```
 
 Usage:
+
 ```bash
 # Generate all environments
 npx swagger2ts
@@ -216,16 +218,17 @@ Running the generator creates the following structure:
 ├── .temp/
 │   └── swagger.json               # Processed Swagger (after patches/conversion)
 ├── types/
-│   ├── {Tag}Controller/
+│   ├── {Tag}/                     # Tag-based grouping
 │   │   ├── {OperationId}.ts       # Type definitions per operation
 │   │   └── index.ts
 │   └── index.ts
-├── clients/fetch/
+├── clients/axios/                 # Axios client (default)
 │   ├── {Tag}Service/
 │   │   ├── {operationId}Client.ts # Individual client functions
 │   │   ├── {tag}Service.ts
 │   │   └── index.ts
 │   └── index.ts
+├── client-config.ts               # Runtime configuration helpers
 └── schemas/
     └── {schema}.json              # JSON schemas
 ```
@@ -248,7 +251,7 @@ For detailed examples and code samples, see the **[examples/](./examples/)** dir
 ```typescript
 // Import generated types and client
 import type { GetUsersId } from "./api/types";
-import { getUsersIdClient } from "./api/clients/fetch";
+import { getUsersIdClient } from "./api/clients/axios";
 
 // Make a type-safe API call
 const response = await getUsersIdClient({
@@ -304,7 +307,7 @@ pnpm install
 pnpm run build
 
 # Run in development mode
-pnpm run dev -- -i ./__mock__/swagger.json -o ./api/test
+pnpm run dev -i ./__mock__/swagger.json -o ./api/test
 ```
 
 ### Scripts

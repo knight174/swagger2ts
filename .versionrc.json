@@ -1,15 +1,65 @@
 {
   "types": [
-    { "type": "feat", "section": "Features" },
-    { "type": "fix", "section": "Bug Fixes" },
-    { "type": "chore", "hidden": true },
-    { "type": "docs", "section": "Documentation" },
-    { "type": "style", "hidden": true },
-    { "type": "refactor", "section": "Code Refactoring" },
-    { "type": "perf", "section": "Performance Improvements" },
-    { "type": "test", "hidden": true }
+    {
+      "type": "feat",
+      "section": "Features"
+    },
+    {
+      "type": "fix",
+      "section": "Bug Fixes"
+    },
+    {
+      "type": "perf",
+      "section": "Performance Improvements"
+    },
+    {
+      "type": "revert",
+      "section": "Reverts"
+    },
+    {
+      "type": "docs",
+      "hidden": true
+    },
+    {
+      "type": "style",
+      "hidden": true
+    },
+    {
+      "type": "chore",
+      "hidden": true
+    },
+    {
+      "type": "refactor",
+      "hidden": true
+    },
+    {
+      "type": "test",
+      "hidden": true
+    },
+    {
+      "type": "build",
+      "hidden": true
+    },
+    {
+      "type": "ci",
+      "hidden": true
+    }
   ],
+  "releaseCommitMessageFormat": "chore(release): {{currentTag}} [skip ci]",
+  "tagPrefix": "v",
   "skip": {
-    "changelog": false
-  }
+    "changelog": false,
+    "commit": false,
+    "tag": false
+  },
+  "bumpFiles": [
+    {
+      "filename": "package.json",
+      "type": "json"
+    },
+    {
+      "filename": "package-lock.json",
+      "type": "json"
+    }
+  ]
 }

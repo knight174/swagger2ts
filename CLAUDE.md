@@ -81,20 +81,28 @@ The project follows a modular architecture with clear separation between CLI, Sw
 - Defines all interfaces: `CliOptions`, `ApiSource`, `Swagger2TsConfig`, `CacheMetadata`, etc.
 - `PatchFunction` type for custom Swagger patches
 - `GefeConfig` kept as deprecated alias for backwards compatibility
+- Supports `clientType` and `baseURL` configuration options
 
 **`templates/base.config.ts`** - Reusable Kubb Configuration
 - Exports `getCommonConfig()` - returns standard Kubb plugin configuration for Fetch clients
-- Exports `createApiConfig()` - factory function for creating custom configs
+- Exports `createApiConfig()` - factory function for creating custom configs with clientType support
 - Plugin chain:
   1. `pluginOas()` - Parses OpenAPI/Swagger specs
-  2. `pluginTs()` - Generates TypeScript types grouped by tag
-  3. `pluginClient()` - Generates fetch-based API clients
+  2. `pluginTs()` - Generates TypeScript types grouped by tag (no Controller suffix)
+  3. `pluginClient()` - Generates fetch or axios-based API clients
+- Supports dynamic client type selection (fetch/axios)
 
 **`templates/axios-client.config.ts`** - Axios Client Configuration
 - Exports `getAxiosConfig()` - returns Kubb plugin configuration for Axios clients
 - Exports `createAxiosConfig()` - factory function for Axios-based configs
 - Use when you need Axios features like interceptors, request cancellation, etc.
 - Requires `axios` to be installed in the consuming project
+
+**`templates/client-config.*.template.ts`** - Runtime Client Configuration Templates
+- Auto-generated `client-config.ts` in output directory
+- Provides `configureApiClient()` for runtime baseURL configuration
+- Wraps Kubb's `setConfig()` for easier usage
+- Separate templates for fetch and axios clients
 
 ### Configuration System
 
@@ -109,10 +117,13 @@ export default defineConfig({
     v5: {
       input: 'https://api.com/v5/swagger.json',
       output: './src/api/v5',
+      clientType: 'fetch',  // 'fetch' or 'axios'
+      baseURL: 'https://api.com/v5',  // Optional: for documentation only
     },
     v7: {
       input: 'https://api.com/v7/swagger.json',
       output: './src/api/v7',
+      clientType: 'axios',  // Use Axios for this source
     }
   },
   convertToV3: true,
@@ -145,17 +156,18 @@ Output directory structure:
 ├── .temp/
 │   └── swagger.json           # Processed Swagger (after patches/conversion)
 ├── types/
-│   ├── {Tag}Controller/
+│   ├── {Tag}/                 # Tag-based grouping (no Controller suffix)
 │   │   ├── {OperationId}.ts   # Type definitions per operation
 │   │   └── index.ts
 │   └── index.ts
-├── clients/fetch/
+├── clients/{clientType}/       # 'fetch' or 'axios'
 │   ├── {Tag}Service/
 │   │   ├── {operationId}Client.ts  # Individual client functions
 │   │   ├── {tag}Service.ts
 │   │   └── index.ts
 │   ├── operations.ts
 │   └── index.ts
+├── client-config.ts            # Runtime configuration helpers (auto-generated)
 └── schemas/                    # JSON schemas
 ```
 
@@ -202,6 +214,131 @@ const customPatch: PatchFunction = (content: string) => {
 **Bypassing Cache**:
 Use `--force` or `--no-cache` flags, or delete `{output}/.api-gen-cache/` directory.
 
+## Runtime Configuration Best Practices
+
+### BaseURL Configuration
+
+The `baseURL` field in config files is **optional and for documentation only**. The actual baseURL should be configured at **runtime** using environment variables.
+
+**Recommended Approach (Similar to GraphQL Client)**:
+
+```typescript
+// 1. Configure once at app initialization (e.g., main.ts, app.ts)
+import { configureApiClient } from './api/v5/client-config'
+
+configureApiClient({
+  baseURL: process.env.NEXT_PUBLIC_API_URL || 'https://api.example.com',
+  headers: {
+    'Content-Type': 'application/json',
+  }
+})
+
+// 2. Use generated clients anywhere in your app
+import { getUsersIdClient } from './api/v5/clients/fetch'
+
+const response = await getUsersIdClient({ params: { id: '123' } })
+```
+
+**Environment-specific Configuration**:
+
+```typescript
+// config/api.ts
+const isDevelopment = process.env.NODE_ENV === 'development'
+const isProduction = process.env.NODE_ENV === 'production'
+
+configureApiClient({
+  baseURL: isDevelopment
+    ? 'http://localhost:3000/api'
+    : isProduction
+      ? process.env.NEXT_PUBLIC_API_URL
+      : 'https://api.staging.com',
+})
+```
+
+**Dynamic Headers (e.g., Authentication)**:
+
+```typescript
+import { updateApiHeaders } from './api/client-config'
+
+// After user login
+function handleLogin(token: string) {
+  updateApiHeaders({
+    'Authorization': `Bearer ${token}`
+  })
+}
+
+// After logout
+function handleLogout() {
+  updateApiHeaders({
+    'Authorization': ''
+  })
+}
+```
+
+### Client Type Selection
+
+**When to use Fetch (Default)**:
+- ✅ Modern web applications (React, Vue, Next.js)
+- ✅ Zero dependencies requirement
+- ✅ Simple HTTP requests without advanced features
+- ✅ SSR/SSG environments (Node 18+)
+
+**When to use Axios**:
+- ✅ Need request/response interceptors
+- ✅ Request cancellation (AbortController alternative)
+- ✅ Progress monitoring (file uploads)
+- ✅ Better error handling out of the box
+- ✅ Legacy codebases already using Axios
+
+**Configuration**:
+
+```typescript
+// swagger2ts.config.ts
+export default defineConfig({
+  sources: {
+    publicApi: {
+      input: 'https://api.com/public/swagger.json',
+      output: './src/api/public',
+      clientType: 'fetch',  // Lightweight, zero deps
+    },
+    adminApi: {
+      input: 'https://api.com/admin/swagger.json',
+      output: './src/api/admin',
+      clientType: 'axios',  // Need interceptors
+    }
+  }
+})
+```
+
+**Using Axios Interceptors**:
+
+```typescript
+import { apiAxiosInstance } from './api/admin/client-config'
+
+// Request interceptor
+apiAxiosInstance.interceptors.request.use(
+  (config) => {
+    const token = localStorage.getItem('token')
+    if (token) {
+      config.headers.Authorization = `Bearer ${token}`
+    }
+    return config
+  }
+)
+
+// Response interceptor
+apiAxiosInstance.interceptors.response.use(
+  (response) => response,
+  (error) => {
+    if (error.response?.status === 401) {
+      // Redirect to login
+      window.location.href = '/login'
+    }
+    return Promise.reject(error)
+  }
+)
+```
+
 ## Important Notes
 
 **TypeScript Configuration**:
@@ -230,32 +367,49 @@ node dist/bin/swagger2ts.js -i ./swagger.json -o ./dist/test
 The `examples/` directory contains practical code samples demonstrating various use cases:
 
 - **`01-basic-usage.ts`** - Simple API calls with type safety
-- **`02-with-authentication.ts`** - Adding authentication headers
+- **`02-with-authentication.ts`** - Runtime client configuration and authentication
 - **`03-multiple-api-sources.ts`** - Managing multiple API sources
 - **`04-custom-patches.ts`** - Creating custom patch functions
-- **`05-config-file.ts`** - Using `gefe.config.ts` for advanced configuration
+- **`05-config-file.ts`** - Using config file for advanced configuration
 - **`06-env-variables.sh`** - Environment variable configuration
-- **`07-axios-client.ts`** - Using Axios instead of Fetch
+- **`07-axios-client.ts`** - Using Axios instead of Fetch with interceptors
+- **`08-runtime-baseurl.ts`** - Runtime baseURL configuration examples
+- **`09-config-with-client-type.ts`** - Multi-source with different client types
 - **`README.md`** - Complete examples documentation
 
 When adding new features, consider adding a corresponding example to help users understand the functionality.
 
 ## Client Types
 
-The generator supports two client types:
+The generator supports two client types that can be configured per source:
 
 **Fetch Client (Default)**:
 - Uses native `fetch` API
 - No additional dependencies
-- Configuration: `templates/base.config.ts`
+- Automatically selected with `clientType: 'fetch'`
 - Output: `{output}/clients/fetch/`
+- Auto-generates `client-config.ts` with Fetch-specific helpers
 
 **Axios Client**:
 - Uses Axios library for HTTP requests
 - Requires `axios` dependency in consuming project
-- Configuration: `templates/axios-client.config.ts`
+- Select with `clientType: 'axios'` in config
 - Output: `{output}/clients/axios/`
+- Auto-generates `client-config.ts` with Axios-specific helpers
 - Benefits: Request/response interceptors, automatic JSON transformation, request cancellation, better error handling
 
-To use Axios client, users would need to create a custom generator script importing from `templates/axios-client.config.ts`.
+**Usage**:
+
+```typescript
+// swagger2ts.config.ts
+export default defineConfig({
+  sources: {
+    publicApi: {
+      input: 'https://api.com/swagger.json',
+      output: './src/api/public',
+      clientType: 'fetch',  // or 'axios'
+    }
+  }
+})
+```
 

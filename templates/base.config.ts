@@ -20,7 +20,7 @@ export function getCommonConfig(): Pick<UserConfig, "plugins"> {
         },
         group: {
           type: "tag",
-          name: ({ group }) => `${group}Controller`,
+          name: ({ group }) => `${group}`,
         },
         enumType: "asConst",
         enumSuffix: "Enum",
@@ -38,10 +38,10 @@ export function getCommonConfig(): Pick<UserConfig, "plugins"> {
         },
         group: {
           type: "tag",
-          name: ({ group }) => `${group}Service`,
+          name: ({ group }: { group: string }) => `${group}Service`,
         },
         transformers: {
-          name: (name, type) => {
+          name: (name: string, type?: string) => {
             return `${name}Client`;
           },
         },
@@ -56,7 +56,8 @@ export function getCommonConfig(): Pick<UserConfig, "plugins"> {
         pathParamsType: "object",
         dataReturnType: "full",
         client: "fetch",
-      }),
+        bundle: true,
+      } as any),
     ],
   };
 }
@@ -69,11 +70,62 @@ export function createApiConfig(options: {
   output: string;
   clean?: boolean;
   clientType?: "fetch" | "axios";
+  baseURL?: string;
 }): UserConfig {
-  const { input, output, clean = false, clientType = "fetch" } = options;
+  const { input, output, clean = false, clientType = "axios", baseURL } = options;
 
   return {
-    ...getCommonConfig(),
+    plugins: [
+      // 1. OAS 解析器
+      pluginOas(),
+
+      // 2. 生成 TypeScript 类型
+      pluginTs({
+        output: {
+          path: "./types",
+        },
+        group: {
+          type: "tag",
+          name: ({ group }) => `${group}`,
+        },
+        enumType: "asConst",
+        enumSuffix: "Enum",
+        unknownType: "unknown",
+        optionalType: "questionTokenAndUndefined",
+      }),
+
+      // 3. 生成 API 客户端
+      pluginClient({
+        output: {
+          path: `./clients/${clientType}`,
+          barrelType: "named",
+          banner: "/* eslint-disable no-alert, no-console */",
+          footer: "",
+        },
+        group: {
+          type: "tag",
+          name: ({ group }: { group: string }) => `${group}Service`,
+        },
+        transformers: {
+          name: (name: string, type?: string) => {
+            return `${name}Client`;
+          },
+        },
+        operations: true,
+        parser: "client",
+        exclude: [
+          {
+            type: "tag",
+            pattern: "store",
+          },
+        ],
+        pathParamsType: "object",
+        dataReturnType: "full",
+        client: clientType,
+        baseURL,
+        bundle: true,
+      } as any),
+    ],
     input: {
       path: input,
     },

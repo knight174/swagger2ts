@@ -30,7 +30,7 @@ export function getAxiosConfig(): Pick<UserConfig, "plugins"> {
         },
         group: {
           type: "tag",
-          name: ({ group }) => `${group}Controller`,
+          name: ({ group }) => `${group}`,
         },
         enumType: "asConst",
         enumSuffix: "Enum",
@@ -48,10 +48,10 @@ export function getAxiosConfig(): Pick<UserConfig, "plugins"> {
         },
         group: {
           type: "tag",
-          name: ({ group }) => `${group}Service`,
+          name: ({ group }: { group: string }) => `${group}Service`,
         },
         transformers: {
-          name: (name, type) => {
+          name: (name: string, type?: string) => {
             return `${name}Client`;
           },
         },
@@ -65,8 +65,9 @@ export function getAxiosConfig(): Pick<UserConfig, "plugins"> {
         ],
         pathParamsType: "object",
         dataReturnType: "full",
-        client: "axios", // Use Axios instead of Fetch
-      }),
+        client: "axios",
+        bundle: true,  // Copy client runtime to .kubb directory, avoiding dependency on @kubb/plugin-client
+      } as any),
     ],
   };
 }

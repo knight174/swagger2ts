@@ -22,6 +22,8 @@ export interface ApiSource {
   convertToV3?: boolean;
   clean?: boolean;
   patches?: PatchFunction[];
+  clientType?: "fetch" | "axios";
+  baseURL?: string;
 }
 
 /**
@@ -68,4 +70,6 @@ export interface GeneratorOptions {
   output: string;
   clean?: boolean;
   configPath?: string;
+  clientType?: "fetch" | "axios";
+  baseURL?: string;
 }

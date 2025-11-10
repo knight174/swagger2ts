@@ -33,7 +33,7 @@ export async function run(options: CliOptions): Promise<void> {
   const configPath = findConfigFile(cwd, options.config);
 
   if (configPath) {
-    console.log(chalk.blue(`📋 使用配置文件: ${configPath}\n`));
+    console.log(chalk.blue(`📋 使用配置文件：${configPath}\n`));
     const config = await loadConfigFile(configPath);
     await runWithConfig(config, options);
   } else {
@@ -63,10 +63,10 @@ async function runWithConfig(
   for (const sourceName of requestedSources) {
     if (!config.sources[sourceName]) {
       console.error(
-        chalk.red(`❌ 配置文件中未找到源: "${sourceName}"`)
+        chalk.red(`❌ 配置文件中未找到源："${sourceName}"`)
       );
       console.log(
-        chalk.gray(`可用的源: ${Object.keys(config.sources).join(", ")}`)
+        chalk.gray(`可用的源：${Object.keys(config.sources).join(", ")}`)
       );
       process.exit(1);
     }
@@ -74,16 +74,16 @@ async function runWithConfig(
 
   console.log(
     chalk.cyan(
-      `📦 将生成 ${requestedSources.length} 个源: ${requestedSources.join(", ")}\n`
+      `📦 将生成 ${requestedSources.length} 个源：${requestedSources.join(", ")}\n`
     )
   );
 
   // 逐个生成
   for (const sourceName of requestedSources) {
     const source = config.sources[sourceName];
-    console.log(chalk.cyan.bold(`\n▶ 生成源: ${sourceName}`));
+    console.log(chalk.cyan.bold(`\n▶ 生成源：${sourceName}`));
 
-    // 合并配置: 全局配置 + 源配置 + CLI 覆盖
+    // 合并配置：全局配置 + 源配置 + CLI 覆盖
     const mergedSource: ApiSource = {
       ...source,
       convertToV3: options.convertToV3 ?? source.convertToV3 ?? config.convertToV3 ?? false,
@@ -130,7 +130,7 @@ async function runSingle(options: CliOptions): Promise<void> {
     console.log(
       chalk.gray(
         "\n使用方式:\n" +
-          "  1. 创建配置文件: swagger2ts.config.ts\n" +
+          "  1. 创建配置文件：swagger2ts.config.ts\n" +
           "  2. 指定输入输出：-i <input> -o <output>\n" +
           "  3. 使用环境变量：SWAGGER_INPUT 和 OUTPUT_PATH\n"
       )
@@ -142,8 +142,7 @@ async function runSingle(options: CliOptions): Promise<void> {
   input = input.startsWith("http") ? input : path.resolve(input);
   output = path.resolve(output);
 
-  console.log(chalk.gray(`📥 输入：${input}`));
-  console.log(chalk.gray(`📤 输出：${output}\n`));
+  // 注意: 这里不打印日志,在 runSourceGeneration 中统一打印
 
   const source: ApiSource = {
     input,
@@ -166,7 +165,15 @@ async function runSourceGeneration(
   source: ApiSource,
   options: CliOptions
 ): Promise<void> {
-  const { input, output, convertToV3 = false, clean = false, patches = [] } = source;
+  const {
+    input,
+    output,
+    convertToV3 = false,
+    clean = false,
+    patches = [],
+    clientType = "axios",
+    baseURL,
+  } = source;
 
   // 解析路径
   const resolvedInput = input.startsWith("http") ? input : path.resolve(input);
@@ -174,6 +181,10 @@ async function runSourceGeneration(
 
   console.log(chalk.gray(`  📥 输入：${resolvedInput}`));
   console.log(chalk.gray(`  📤 输出：${resolvedOutput}`));
+  console.log(chalk.gray(`  🔧 客户端类型：${clientType}`));
+  if (baseURL) {
+    console.log(chalk.gray(`  🌐 Base URL：${baseURL}`));
+  }
 
   try {
     // 处理 Swagger（获取、补丁、转换）
@@ -206,6 +217,8 @@ async function runSourceGeneration(
       input: tempFile,
       output: resolvedOutput,
       clean,
+      clientType,
+      baseURL,
     });
 
     // 更新缓存
