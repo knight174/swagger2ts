@@ -9,7 +9,6 @@ export interface CliOptions {
   convertToV3?: boolean;
   noCache?: boolean;
   clean?: boolean;
-  env?: string;
   force?: boolean;
 }
 

@@ -34,7 +34,6 @@ pnpm dev -i ./swagger.json -o ./dist/api
 
 # Common options
 npx @miaoosi/swagger2ts -i ./swagger.json -o ./dist --force  # Force regeneration
-npx @miaoosi/swagger2ts --env .env.production       # Load specific .env file
 npx @miaoosi/swagger2ts -i ./swagger.json -o ./dist --convert-to-v3  # Convert Swagger 2.0
 ```
 
@@ -46,10 +45,9 @@ The project follows a modular architecture with clear separation between CLI, Sw
 
 **`src/cli.ts`** - Main CLI Logic
 - Parses command-line options using `cac`
-- Supports three configuration sources (priority order):
+- Supports two configuration sources (priority order):
   1. Config file (`swagger2ts.config.ts`)
   2. CLI parameters (`-i`, `-o`)
-  3. Environment variables (`SWAGGER_INPUT`, `OUTPUT_PATH`)
 - Coordinates the entire generation workflow
 - Handles multi-source generation
 
@@ -134,11 +132,6 @@ Usage:
 ```bash
 npx @miaoosi/swagger2ts -i ./swagger.json -o ./src/api
 ```
-
-**3. Environment Variables** (`.env` file)
-- `SWAGGER_INPUT` - Input Swagger file/URL
-- `OUTPUT_PATH` - Output directory
-- `CONVERT_TO_V3` - Convert Swagger 2.0 to OpenAPI 3.x
 
 ### Generated Code Structure
 
@@ -364,10 +357,7 @@ The `examples/` directory contains practical code samples demonstrating various 
 - **`02-with-authentication.ts`** - Runtime client configuration and authentication
 - **`03-multiple-api-sources.ts`** - Managing multiple API sources
 - **`04-custom-patches.ts`** - Creating custom patch functions
-- **`06-env-variables.sh`** - Environment variable configuration
-- **`07-axios-client.ts`** - Using Axios instead of Fetch with interceptors
-- **`08-runtime-baseurl.ts`** - Runtime baseURL configuration examples
-- **`09-config-with-client-type.ts`** - Multi-source with different client types
+- **`05-extending-with-kubb-plugins.ts`** - Extending with Kubb plugins (Zod, React Query, etc.)
 - **`README.md`** - Complete examples documentation
 
 For advanced configuration examples, see [swagger2ts.config.example.ts](./swagger2ts.config.example.ts).

@@ -38,7 +38,6 @@ cli
   .option("--no-cache", "跳过增量检查，强制重新生成")
   .option("--clean", "清空输出目录")
   .option("--force", "强制重新生成（同 --no-cache）")
-  .option("--env <path>", "加载指定的 .env 文件")
   .action(async (_action, options: CliOptions) => {
     await run(options);
   });

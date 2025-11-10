@@ -1,5 +1,4 @@
 import path from "path";
-import { config as loadEnv } from "dotenv";
 import chalk from "chalk";
 import type { CliOptions, PatchFunction, ApiSource } from "./types.js";
 import {
@@ -19,17 +18,9 @@ import {
 export async function run(options: CliOptions): Promise<void> {
   console.log(chalk.cyan.bold("\n🚀 Swagger2TS\n"));
 
-  // 加载环境变量
-  if (options.env) {
-    loadEnv({ path: options.env });
-    console.log(chalk.gray(`📦 加载环境变量：${options.env}\n`));
-  } else {
-    loadEnv();
-  }
-
   const cwd = process.cwd();
 
-  // 1. 尝试加载配置文件
+  // 尝试加载配置文件
   const configPath = findConfigFile(cwd, options.config);
 
   if (configPath) {
@@ -37,7 +28,7 @@ export async function run(options: CliOptions): Promise<void> {
     const config = await loadConfigFile(configPath);
     await runWithConfig(config, options);
   } else {
-    // 2. 单一生成模式 (使用 CLI 参数或环境变量)
+    // 单一生成模式 (使用 CLI 参数)
     await runSingle(options);
   }
 }
@@ -110,29 +101,18 @@ async function runSingle(options: CliOptions): Promise<void> {
   let clean = options.clean || false;
   let patches: PatchFunction[] = [];
 
-  // 1. 从 CLI 参数获取
+  // 从 CLI 参数获取
   if (options.input && options.output) {
     input = options.input;
     output = options.output;
-  }
-  // 2. 从环境变量获取
-  else if (process.env.SWAGGER_INPUT && process.env.OUTPUT_PATH) {
-    input = process.env.SWAGGER_INPUT;
-    output = process.env.OUTPUT_PATH;
-    convertToV3 =
-      process.env.CONVERT_TO_V3 === "true" ? true : convertToV3;
-
-    console.log(chalk.blue("📌 使用环境变量配置"));
-  }
-  // 3. 错误：缺少必要参数
-  else {
+  } else {
+    // 错误：缺少必要参数
     console.error(chalk.red("❌ 缺少必要参数"));
     console.log(
       chalk.gray(
         "\n使用方式:\n" +
           "  1. 创建配置文件：swagger2ts.config.ts\n" +
-          "  2. 指定输入输出：-i <input> -o <output>\n" +
-          "  3. 使用环境变量：SWAGGER_INPUT 和 OUTPUT_PATH\n"
+          "  2. 指定输入输出：-i <input> -o <output>\n"
       )
     );
     process.exit(1);

@@ -81,11 +81,10 @@ npx swagger2ts -i <path-to-swagger-or-url> -o <output-directory>
 | `--force` | | Force regeneration (skip cache check) |
 | `--no-cache` | | Same as `--force` |
 | `--clean` | | Clean output directory before generation |
-| `--env <path>` | | Load specific `.env` file |
 
 ## Configuration Methods
 
-Swagger2TS supports three configuration methods, with the following priority order:
+Swagger2TS supports two configuration methods, with the following priority order:
 
 ### 1. Config File (Recommended for Multiple Sources)
 
@@ -153,28 +152,6 @@ Pass input/output directly via command line:
 ```bash
 npx swagger2ts -i ./swagger.json -o ./src/api
 npx swagger2ts -i https://api.com/swagger.json -o ./src/api --clean
-```
-
-### 3. Environment Variables
-
-Create a `.env` file in your project root:
-
-```env
-SWAGGER_INPUT=https://api.example.com/swagger.json
-OUTPUT_PATH=./src/api
-CONVERT_TO_V3=true
-```
-
-Then run:
-
-```bash
-npx swagger2ts
-```
-
-You can also specify a custom `.env` file:
-
-```bash
-npx swagger2ts --env .env.production
 ```
 
 ## Multi-Environment Setup

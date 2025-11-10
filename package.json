@@ -2,7 +2,7 @@
   "name": "@miaoosi/swagger2ts",
   "version": "0.3.3",
   "type": "module",
-  "description": "Generate TypeScript types and API clients from OpenAPI/Swagger specifications",
+  "description": "A developer-friendly CLI wrapper for Kubb with multi-source management, smart caching, and Swagger 2.0 support",
   "author": "Chaos",
   "keywords": [
     "openapi",
@@ -47,7 +47,6 @@
     "bundle-require": "^5.1.0",
     "cac": "^6.7.14",
     "chalk": "^5.6.2",
-    "dotenv": "^17.2.3",
     "swagger2openapi": "^7.0.8"
   },
   "devDependencies": {
