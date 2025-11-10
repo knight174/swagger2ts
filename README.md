@@ -2,28 +2,26 @@
 
 A developer-friendly CLI wrapper for [Kubb](https://kubb.dev/) with incremental generation, smart caching, and simplified configuration.
 
-English | [简体中文](./README.zh-CN.md)
-
 ## What is Swagger2TS?
 
 Swagger2TS is a **development workflow tool** built on top of [Kubb](https://kubb.dev/). Think of it as `create-react-app` for OpenAPI code generation - it doesn't replace Kubb, it makes it easier to use with smart defaults and workflow optimizations.
 
 **Best for:**
 - Teams wanting simple configuration over Kubb's flexibility
-- Projects needing incremental generation for CI/CD optimization
 - Managing multiple API sources (v1, v2, dev, prod, etc.)
 - Working with legacy Swagger 2.0 APIs
+- Projects needing non-standard API spec patches
 
 ## Why Swagger2TS?
 
-While [Kubb](https://kubb.dev/) is powerful, Swagger2TS adds workflow optimizations:
+While [Kubb](https://kubb.dev/) is powerful, Swagger2TS adds workflow optimizations for team productivity:
 
-- **⚡ Incremental Generation**: MD5-based caching skips regeneration when unchanged (Kubb lacks this)
+- **🔄 Multi-Source Management**: Generate multiple API sources (v1, v2, dev, prod) in one command
 - **📦 Zero Config**: Pre-configured Kubb plugins with sensible defaults
-- **🔄 Multi-Source Management**: Generate multiple API sources in one command
 - **🔧 Swagger 2.0 Auto-Conversion**: Seamless upgrade to OpenAPI 3.x
 - **🩹 Patch System**: Fix non-standard API specs (e.g., Gitee's Timestamp type)
 - **🎯 Simplified DX**: One CLI replaces complex Kubb config files
+- **⚡ Smart Caching**: Skip regeneration when Swagger unchanged (useful when debugging configurations)
 
 **Core Features** (powered by Kubb):
 - Type-safe TypeScript types and API clients
@@ -32,7 +30,7 @@ While [Kubb](https://kubb.dev/) is powerful, Swagger2TS adds workflow optimizati
 
 ## Quick Start
 
-> **Built with [Kubb](https://kubb.dev/)** - Swagger2TS is a CLI wrapper that adds incremental generation, caching, and simplified configuration on top of Kubb's powerful plugin ecosystem.
+> **Built with [Kubb](https://kubb.dev/)** - Swagger2TS is a CLI wrapper that simplifies Kubb configuration and adds multi-source management, smart caching, and Swagger 2.0 support.
 
 ### Using npx (No Installation Required)
 
@@ -317,45 +315,23 @@ Running the generator creates the following structure:
 
 ## Usage Examples
 
-For detailed examples and code samples, see the **[examples/](./examples/)** directory.
-
-**Quick examples:**
+For detailed code examples and usage patterns, see the **[examples/](./examples/)** directory:
 
 - **[Basic Usage](./examples/01-basic-usage.ts)** - Simple API calls with type safety
-- **[Authentication](./examples/02-with-authentication.ts)** - Adding auth headers
-- **[Multiple API Sources](./examples/03-multiple-api-sources.ts)** - Managing multiple APIs
+- **[Authentication](./examples/02-with-authentication.ts)** - Runtime client configuration and auth headers
+- **[Multiple API Sources](./examples/03-multiple-api-sources.ts)** - Managing multiple APIs in one project
 - **[Custom Patches](./examples/04-custom-patches.ts)** - Fixing non-standard Swagger formats
-- **[Environment Variables](./examples/06-env-variables.sh)** - Using `.env` files
-- **[Axios Client](./examples/07-axios-client.ts)** - Using Axios instead of Fetch
+- **[Extending with Kubb Plugins](./examples/05-extending-with-kubb-plugins.ts)** - Adding Zod, React Query, and other plugins
 
-### Quick Start Example
+Each example includes complete, runnable code with detailed comments. See [examples/README.md](./examples/README.md) for full documentation.
 
-```typescript
-// Import generated types and client
-import type { GetUsersId } from "./api/types";
-import { getUsersIdClient } from "./api/clients/axios";
+## Incremental Generation
 
-// Make a type-safe API call
-const response = await getUsersIdClient({
-  params: { id: "123" }
-});
+Swagger2TS uses MD5 hashing to detect changes and skip unnecessary regeneration:
 
-if (response.ok) {
-  const user: GetUsersId["response"] = await response.json();
-  console.log(user);
-}
-```
-
-See the [examples/README.md](./examples/README.md) for complete documentation of all examples.
-
-## Incremental Generation (Unique to Swagger2TS)
-
-**Why this matters**: Kubb regenerates all files on every run. For large APIs or frequent runs, this wastes time.
-
-Swagger2TS uses MD5 hashing to detect changes:
 - **First run**: Generates all files and stores hash in `.api-gen-cache/metadata.json`
-- **Subsequent runs**: ~100x faster if unchanged (skips generation entirely)
-- **Perfect for**: CI/CD pipelines, pre-commit hooks, watch mode
+- **Subsequent runs**: Skips generation if Swagger content unchanged
+- **Useful for**: Debugging configuration options, managing multiple sources
 
 **Usage:**
 
@@ -493,7 +469,7 @@ export default {
 npx swagger2ts -i ./swagger.json -o ./src/api
 ```
 
-**Note**: You can still extend with any Kubb plugin via the `kubb` field in config. See [Extending with Kubb Plugins](#extending-with-kubb-plugins).
+**Note**: You can still extend with any Kubb plugin via the `kubb` field in config. See [Extending with Kubb Plugins](#extending-with-kubb-plugins) and the [plugin extension example](./examples/05-extending-with-kubb-plugins.ts).
 
 ## Contributing
 

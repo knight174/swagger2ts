@@ -1,6 +1,6 @@
 # Swagger2TS - Examples
 
-This directory contains various examples demonstrating how to use Swagger2TS in different scenarios.
+This directory contains practical examples demonstrating how to use Swagger2TS in different scenarios.
 
 ## Examples Overview
 
@@ -9,19 +9,18 @@ This directory contains various examples demonstrating how to use Swagger2TS in 
 Learn how to use the generated API client for basic API calls with full type safety.
 
 **Key concepts:**
-
 - Importing generated types and clients
 - Making type-safe API requests
 - Handling responses
 
 ### 2. Authentication (`02-with-authentication.ts`)
 
-Add authentication headers to your API requests.
+Configure runtime client settings and add authentication headers to your API requests.
 
 **Key concepts:**
-
-- Adding custom headers
-- Bearer token authentication
+- Runtime client configuration
+- Adding auth headers (Bearer tokens)
+- Dynamic header updates (login/logout)
 - Error handling
 
 ### 3. Multiple API Sources (`03-multiple-api-sources.ts`)
@@ -29,9 +28,8 @@ Add authentication headers to your API requests.
 Manage and use multiple API sources in the same project.
 
 **Key concepts:**
-
-- Generating clients for multiple APIs
-- Importing from different API sources
+- Config file with multiple sources
+- Generating clients for different APIs
 - Using multiple clients together
 
 ### 4. Custom Patches (`04-custom-patches.ts`)
@@ -39,51 +37,21 @@ Manage and use multiple API sources in the same project.
 Create custom patch functions to fix non-standard Swagger formats.
 
 **Key concepts:**
-
 - Creating patch functions
-- Fixing type definitions
+- Fixing non-standard type definitions
 - Transforming Swagger specs before generation
+- Using built-in patches
 
-### 5. Environment Variables (`06-env-variables.sh`)
+### 5. Extending with Kubb Plugins (`05-extending-with-kubb-plugins.ts`)
 
-Configure the generator using environment variables.
-
-**Key concepts:**
-
-- `.env` file usage
-- Custom environment files
-- Environment-based configuration
-
-### 6. Axios Client (`07-axios-client.ts`)
-
-Use Axios instead of Fetch for HTTP requests.
+Extend code generation with additional Kubb plugins for Zod schemas, React Query hooks, and more.
 
 **Key concepts:**
-
-- Generating Axios-based clients
-- Request/response interceptors
-- Advanced Axios features
-- Error handling with Axios
-
-### 7. Runtime BaseURL Configuration (`08-runtime-baseurl.ts`)
-
-Configure API base URL at runtime for different environments.
-
-**Key concepts:**
-
-- Runtime configuration
-- Environment-specific URLs
-- Dynamic header updates
-
-### 8. Multiple Client Types (`09-config-with-client-type.ts`)
-
-Use different client types (Fetch/Axios) for different API sources.
-
-**Key concepts:**
-
-- Per-source client type configuration
-- Mixing Fetch and Axios clients
-- Client-specific features
+- Installing Kubb plugins
+- Configuring plugins in swagger2ts.config.ts
+- Using generated Zod schemas for validation
+- Using generated React Query hooks
+- Available plugin ecosystem
 
 ## Quick Start
 
@@ -114,8 +82,8 @@ npx @miaoosi/swagger2ts -i ./swagger.json -o ./src/api --force
 ## Additional Resources
 
 - **Main Documentation:** See [README.md](../README.md) for complete documentation
-- **Configuration Example:** See [swagger2ts.config.example.ts](../swagger2ts.config.example.ts) for advanced configuration
-- **Environment Variables:** See [.env.example](../.env.example) for environment variable configuration
+- **Configuration Example:** See [swagger2ts.config.example.ts](../swagger2ts.config.example.ts) for advanced configuration options
+- **Development Guide:** See [CLAUDE.md](../CLAUDE.md) for project architecture and development guidance
 
 ## Need Help?
 
@@ -123,4 +91,4 @@ If you encounter issues or have questions:
 
 1. Check the [Troubleshooting](../README.md#troubleshooting) section in the main README
 2. Review the examples in this directory
-3. Check the [CLAUDE.md](../CLAUDE.md) for development guidance
+3. Explore the [Kubb documentation](https://kubb.dev/) for advanced plugin usage
