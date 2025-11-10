@@ -1,20 +1,38 @@
 # Swagger2TS
 
-Generate type-safe TypeScript API clients from OpenAPI/Swagger specifications with incremental generation support.
+A developer-friendly CLI wrapper for [Kubb](https://kubb.dev/) with incremental generation, smart caching, and simplified configuration.
 
 English | [简体中文](./README.zh-CN.md)
 
-## Features
+## What is Swagger2TS?
 
-- **Type-Safe**: Generates TypeScript types and fully-typed API clients using [Kubb](https://kubb.dev/)
-- **Incremental Generation**: Smart caching system skips regeneration when Swagger hasn't changed
-- **Swagger 2.0 Support**: Automatic conversion to OpenAPI 3.x when needed
-- **Flexible Configuration**: CLI arguments, environment variables, or config files
-- **Custom Patches**: Built-in and extensible patch system for non-standard Swagger formats
-- **Multiple API Sources**: Support for managing multiple API sources via config file
-- **Extensible**: Add Zod schemas, React Query hooks, or any Kubb plugin to extend code generation
+Swagger2TS is a **development workflow tool** built on top of [Kubb](https://kubb.dev/). Think of it as `create-react-app` for OpenAPI code generation - it doesn't replace Kubb, it makes it easier to use with smart defaults and workflow optimizations.
+
+**Best for:**
+- Teams wanting simple configuration over Kubb's flexibility
+- Projects needing incremental generation for CI/CD optimization
+- Managing multiple API sources (v1, v2, dev, prod, etc.)
+- Working with legacy Swagger 2.0 APIs
+
+## Why Swagger2TS?
+
+While [Kubb](https://kubb.dev/) is powerful, Swagger2TS adds workflow optimizations:
+
+- **⚡ Incremental Generation**: MD5-based caching skips regeneration when unchanged (Kubb lacks this)
+- **📦 Zero Config**: Pre-configured Kubb plugins with sensible defaults
+- **🔄 Multi-Source Management**: Generate multiple API sources in one command
+- **🔧 Swagger 2.0 Auto-Conversion**: Seamless upgrade to OpenAPI 3.x
+- **🩹 Patch System**: Fix non-standard API specs (e.g., Gitee's Timestamp type)
+- **🎯 Simplified DX**: One CLI replaces complex Kubb config files
+
+**Core Features** (powered by Kubb):
+- Type-safe TypeScript types and API clients
+- Support for React Query, Zod, MSW, and other Kubb plugins
+- Axios and Fetch client generation
 
 ## Quick Start
+
+> **Built with [Kubb](https://kubb.dev/)** - Swagger2TS is a CLI wrapper that adds incremental generation, caching, and simplified configuration on top of Kubb's powerful plugin ecosystem.
 
 ### Using npx (No Installation Required)
 
@@ -330,13 +348,16 @@ if (response.ok) {
 
 See the [examples/README.md](./examples/README.md) for complete documentation of all examples.
 
-## Incremental Generation
+## Incremental Generation (Unique to Swagger2TS)
 
-The tool uses MD5 hashing to detect changes in Swagger files:
+**Why this matters**: Kubb regenerates all files on every run. For large APIs or frequent runs, this wastes time.
 
+Swagger2TS uses MD5 hashing to detect changes:
 - **First run**: Generates all files and stores hash in `.api-gen-cache/metadata.json`
-- **Subsequent runs**: Skips generation if Swagger content hasn't changed
-- **Force regeneration**: Use `--force` or `--no-cache` flag
+- **Subsequent runs**: ~100x faster if unchanged (skips generation entirely)
+- **Perfect for**: CI/CD pipelines, pre-commit hooks, watch mode
+
+**Usage:**
 
 ```bash
 # Normal run - will skip if unchanged
@@ -443,30 +464,36 @@ For Swagger 2.0 validation errors:
 npx swagger2ts -i ./swagger.json -o ./src/api --convert-to-v3
 ```
 
-## Migration Guide
+## For Kubb Users
 
-### From Direct Kubb Usage
+### Simplify Your Workflow
 
-Replace your Kubb configuration with Swagger2TS CLI:
+If you're using Kubb directly, Swagger2TS can simplify your setup while adding incremental generation:
 
-**Before:**
+**Before (Kubb):**
 
 ```typescript
-// kubb.config.ts
+// kubb.config.ts - complex configuration
 export default {
   input: { path: './swagger.json' },
   output: { path: './src/api' },
-  // ... complex plugin config
+  plugins: [
+    pluginOas(),
+    pluginTs({ output: { path: './types' } }),
+    pluginClient({ output: { path: './clients' } }),
+    // ... complex plugin config
+  ]
 }
 ```
 
-**After:**
+**After (Swagger2TS):**
 
 ```bash
+# Same result with zero config
 npx swagger2ts -i ./swagger.json -o ./src/api
 ```
 
-All plugin configurations are handled by `templates/base.config.ts`.
+**Note**: You can still extend with any Kubb plugin via the `kubb` field in config. See [Extending with Kubb Plugins](#extending-with-kubb-plugins).
 
 ## Contributing
 
